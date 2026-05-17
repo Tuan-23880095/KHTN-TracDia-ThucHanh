@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         formGrp.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            if (!UserAuth.hasAccess("leader")) && !UserAuth.hasAccess("teacher")) {
+            if (!UserAuth.hasAccess("leader") && !UserAuth.hasAccess("teacher")) {
                 alert("⛔ Bạn không có đặc quyền nộp biểu mẫu này!");
                 return;
             }
