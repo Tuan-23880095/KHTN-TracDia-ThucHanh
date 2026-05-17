@@ -197,7 +197,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     // 5. XỬ LÝ SỰ KIỆN SUBMIT BIỂU MẪU - ĐỒNG BỘ REAL-TIME LÊN CLOUD DATA
-    
+    // =========================================================================
+    // LUỒNG XỬ LÝ SỰ KIỆN NÚT IN ẤN CÁ NHÂN
+    // =========================================================================
+    const btnPrintInd = document.getElementById("btnPrintIndividual");
+    if (btnPrintInd) {
+        btnPrintInd.addEventListener("click", () => {
+            // Kiểm tra điều kiện: Sinh viên phải nhập đủ số liệu mới cho phép in
+            const r1 = DOMUtils.getNumberValue("ind_r1");
+            const r2 = DOMUtils.getNumberValue("ind_r2");
+            const r3 = DOMUtils.getNumberValue("ind_r3");
+            const machineType = document.getElementById("indMachineType").value;
+            const targetName = document.getElementById("indTargetName").value;
+
+            if (!machineType || !targetName || isNaN(r1) || isNaN(r2) || isNaN(r3)) {
+                alert("⚠️ Vui lòng hoàn thành đầy đủ thông tin thiết bị, mục tiêu và 3 lần đọc mia trước khi xuất phiếu in!");
+                return;
+            }
+
+            // GỌI HÀM XUẤT FILE 
+            // Cách 1: Sử dụng lệnh in tiêu chuẩn của trình duyệt (Tận dụng tệp css/a4-print.css đã nhúng sẵn)
+            window.print();
+
+            // Cách 2: Nếu file js/utils/pdfExport.js của hệ thống đã định nghĩa một hàm/Class riêng
+            // (Ví dụ như: pdfExport.generateIndividualReport() ), bạn hãy mở comment dòng dưới và cấu hình:
+            // if (typeof pdfExport !== "undefined") {
+            //     pdfExport.exportIndividualForm();
+            // }
+        });
+    }
     // Luồng A: Xử lý nộp dữ liệu CÁ NHÂN
     const formInd = document.getElementById("individualForm");
     if (formInd) {
