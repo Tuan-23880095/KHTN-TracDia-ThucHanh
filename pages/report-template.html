@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Báo Cáo Kết Quả Thực Tập Trắc Địa | HCMUS</title>
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/dist/solid.js"></script>
+    
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/a4-print.css" media="print">
+    
+    <style>
+        /* Phong cách hiển thị Viewport trên màn hình máy tính để Giảng viên duyệt trước khi in */
+        body {
+            background-color: var(--bg-main);
+            padding: 30px 0;
+        }
+        .print-preview-container {
+            background-color: #ffffff;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm 15mm;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            font-family: "Arial", sans-serif;
+        }
+        .print-control-panel {
+            width: 210mm;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .academic-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+        }
+        .institution-title {
+            font-size: 10.5pt;
+            font-weight: bold;
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+        .report-main-title {
+            text-align: center;
+            margin: 25px 0;
+        }
+        .report-main-title h2 {
+            font-size: 18pt;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .meta-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 30px;
+            font-size: 11pt;
+        }
+        .meta-item strong {
+            color: #475569;
+        }
+        .section-title-a4 {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: var(--primary-blue);
+            padding: 6px 12px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        .signature-zone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 11pt;
+            page-break-inside: avoid;
+        }
+        .img-evidence-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .img-evidence-card {
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            text-align: center;
+            background-color: #fafafa;
+        }
+        .img-evidence-card img {
+            width: 100%;
+            height: 160mm;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+        .evidence-caption {
+            font-size: 9.5pt;
+            margin-top: 6px;
+            font-style: italic;
+            color: #475569;
+        }
+        
+        /* Cấu hình ẩn thanh điều khiển khi ra lệnh in ấn thực tế */
+        @media print {
+            body { padding: 0; background-color: #ffffff; }
+            .print-control-panel { display: none !important; }
+            .print-preview-container { 
+                width: 100% !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+                padding: 0 !important;
+                font-family: "Times New Roman", Times, serif !important;
+            }
+            .section-title-a4 {
+                background-color: #f1f5f9 !important;
+                color: #000000 !important;
+                border-left: 4px solid #000000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-control-panel">
+        <div>
+            <a href="dashboard.html" class="btn btn-secondary" style="text-decoration: none; padding: 6px 12px; font-size: 10pt;">⬅ Quay lại Bảng điều khiển</a>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="window.print();" class="btn btn-primary" style="padding: 6px 18px; font-size: 10pt; font-weight: bold;">
+                🖨 XUẤT BẢN IN / LƯU PDF (A4)
+            </button>
+        </div>
+    </div>
+
+    <div class="print-preview-container" id="a4ReportCanvas">
+        
+        <div class="page-sheet">
+            <div class="academic-header">
+                <div class="institution-title">
+                    ĐHQG-HCM<br>
+                    Trường Đại học Khoa học Tự nhiên<br>
+                    <strong>Khoa Địa chất</strong>
+                </div>
+                <div style="text-align: right; font-size: 10pt; font-style: italic; color: #475569;">
+                    Mẫu phiếu: ĐG1.4/GEO10055<br>
+                    Lưu hành nội bộ học phần
+                </div>
+            </div>
+
+            <div class="report-main-title">
+                <h2>PHIẾU KẾT QUẢ THỰC TẬP TRẮC ĐỊA</h2>
+                <h3 id="rptSessionName" style="font-size: 13pt; font-weight: 600; color: #475569; margin-top: 5px;">BUỔI X: ... TÊN BÀI THỰC HÀNH ...</h3>
+            </div>
+
+            <div class="section-title-a4">I. Thông tin chung</div>
+            <div class="meta-info-grid">
+                <div class="meta-item">👤 <strong>Họ tên sinh viên:</strong> <span id="rptStudentName">Nguyễn Văn A</span></div>
+                <div class="meta-item">🆔 <strong>Mã số sinh viên:</strong> <span id="rptStudentId">22110XXX</span></div>
+                <div class="meta-item">👥 <strong>Mã nhóm thực địa:</strong> <span id="rptGroupId">Nhóm Tổ 01</span></div>
+                <div class="meta-item">📅 <strong>Thời gian đồng bộ:</strong> <span id="rptDateTime">12/05/2026 08:30:15</span></div>
+                <div class="meta-item">🛠️ <strong>Thiết bị sử dụng:</strong> <span id="rptMachineType">Máy Kinh Vĩ Điện Tử</span></div>
+                <div class="meta-item">🎯 <strong>Mốc khống chế ngắm:</strong> <span id="rptTargetName">Mốc chuẩn B1</span></div>
+            </div>
+
+            <div class="section-title-a4">II. Kết quả đo đạc ngoại nghiệp & Bình sai</div>
+            <div id="rptDynamicTableContainer" class="table-responsive">
+                <table class="flat-table">
+                    <thead>
+                        <tr>
+                            <th>Yếu tố khảo sát</th>
+                            <th>Lần đo 1</th>
+                            <th>Lần đo 2</th>
+                            <th>Lần đo 3</th>
+                            <th>Trị trung bình</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rptTableBody">
+                        <tr>
+                            <td>Số đọc thô ($mm$)</td>
+                            <td>1452</td>
+                            <td>1451</td>
+                            <td>1453</td>
+                            <td class="col-highlight">1452.0 mm</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; align-items: center; gap: 15px;">
+                <div style="font-weight: bold; font-size: 11pt;">Chốt chặn kiểm định Quality Control (Bộ môn):</div>
+                <div id="rptQcBadge"><span class="flat-badge badge-success">ĐẠT CHUẨN ĐO ĐẠC</span></div>
+            </div>
+            <p class="text-muted" id="rptQcMessage" style="font-size: 9.5pt; margin-top: 6px; font-style: italic;">
+                * Ghi chú: Hệ thống đã kiểm định biên độ chênh lệch giữa các lần đo độc lập tuân thủ quy định sai số kỹ thuật học phần GEO10055.
+            </p>
+        </div>
+
+        <div style="page-break-before: always; break-before: always;"></div>
+
+        <div class="page-sheet" style="margin-top: 10mm;">
+            <div class="section-title-a4">III. Hồ sơ ảnh minh chứng hiện trường chống chế số</div>
+            
+            <p class="text-muted" style="font-size: 9.5pt; margin-bottom: 10px;">
+                📂 Thư mục gốc lưu trữ dữ liệu ảnh đồng bộ trên Google Drive của Khoa: 
+                <strong style="color: var(--primary-blue);">1eM0GW-K-zIh_1MlWLAG-pbapILHmN8aI</strong>
+            </p>
+
+            <div class="img-evidence-grid">
+                <div class="img-evidence-card">
+                    <img id="rptImgSelfie" src="https://images.unsplash.com/photo-1579202673506-ca3ce28943ef?w=500" alt="Ảnh Selfie Trạm Máy">
+                    <div class="evidence-caption">Minh chứng 1: Thí sinh/Nhóm tác chiến phối hợp kề cận trạm máy</div>
+                </div>
+                <div class="img-evidence-card">
+                    <img id="rptImgInstrument" src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=500" alt="Ảnh chụp Thị kính/Màn hình">
+                    <div class="evidence-caption">Minh chứng 2: Trị số thực tế hiển thị qua LCD hoặc tâm chỉ thập kính</div>
+                </div>
+            </div>
+
+            <div class="section-title-a4" style="margin-top: 35px;">IV. Phê duyệt & Đánh giá của bộ môn</div>
+            <div style="min-height: 20mm; border: 1px dashed #cbd5e1; padding: 15px; font-size: 10.5pt; line-height: 1.6; color: #475569; background-color: #fafafa;">
+                <strong style="color: #000000;">Nhận xét / Điểm số của Giảng viên chấm thi hiện trường:</strong>
+                <p style="margin-top: 35px; border-bottom: 1px dashed #94a3b8;"></p>
+                <p style="margin-top: 20px; border-bottom: 1px dashed #94a3b8;"></p>
+            </div>
+
+            <div class="signature-zone">
+                <div>
+                    <p style="font-style: italic; margin-bottom: 50px;">TP. Hồ Chí Minh, ngày ...... tháng ...... năm 2026</p>
+                    <strong>Đại diện Nhóm / Thí sinh nộp bài</strong><br>
+                    <span style="font-size: 9pt; color:#64748b;">(Ký và ghi rõ họ tên)</span>
+                </div>
+                <div>
+                    <p style="font-style: italic; margin-bottom: 50px;">Xác nhận tại sân đo hiện trường</p>
+                    <strong>Giảng viên / Giám thị coi thi</strong><br>
+                    <span style="font-size: 9pt; color:#64748b;">(Ký tên và nhập điểm bảo lưu)</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../js/utils/mathUtils.js"></script>
+    <script src="../js/utils/domUtils.js"></script>
+    <script src="../js/core/UserAuth.js"></script>
+    <script src="../js/core/APIConnector.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            UserAuth.protectPage();
+            
+            // LƯU Ý KỸ THUẬT: Trong thực tế, khi Giảng viên bấm nút "Xem phiếu" từ Dashboard,
+            // chúng ta sẽ đính kèm thông tin buổi và sinh viên lên URL (Ví dụ: report-template.html?session=1&user=22110XXX)
+            // Đoạn mã Controller dưới đây sẽ bóc tách URL, gửi lệnh Fetch lấy bản ghi Processed_Data từ Google Sheets
+            // và thực hiện điền phẳng (Data Binding) vào các thẻ span/div trên.
+            
+            console.log("Hệ thống Master Report Template đã sẵn sàng kết xuất dữ liệu!");
+        });
+    </script>
+</body>
+</html>
