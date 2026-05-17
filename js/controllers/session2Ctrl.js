@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             setTimeout(() => {
                 alert("Nộp dữ liệu thành công! Trí nhớ cơ bắp của bạn đã được ghi nhận.");
-                window.location.href = "../dashboard.html";
+                window.location.href = "/dashboard.html";
             }, 1000);
         });
     }
