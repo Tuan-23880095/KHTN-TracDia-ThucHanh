@@ -55,12 +55,14 @@ document.addEventListener("DOMContentLoaded", async () => {
                 sessionsSettings[item.session_id] = item.status.toUpperCase().trim();
             });
         } else {
-            console.warn("Không kéo được Settings từ Sheet, áp dụng chế độ OPEN khẩn cấp.");
-            sessionsMetadata.forEach(s => sessionsSettings[s.id] = "OPEN");
+            // VÁ LỖ HỔNG: Áp dụng Fail-Closed thay vì Fail-Open
+            console.warn("Không kéo được Settings từ Sheet, áp dụng chế độ CLOSED an toàn (Fail-Closed).");
+            sessionsMetadata.forEach(s => sessionsSettings[s.id] = "CLOSED"); 
         }
     } catch (err) {
+        // VÁ LỖ HỔNG: Đóng băng toàn bộ hệ thống khi rớt mạng
         console.error("Lỗi cổng API kết nối mạng: ", err);
-        sessionsMetadata.forEach(s => sessionsSettings[s.id] = "OPEN"); // Dự phòng rớt mạng
+        sessionsMetadata.forEach(s => sessionsSettings[s.id] = "CLOSED"); 
     }
 
     // 3. THỰC THI PHÂN QUYỀN HIERARCHICAL VÀ RENDER VIEW INTERFACE
