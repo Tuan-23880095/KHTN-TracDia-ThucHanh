@@ -144,7 +144,7 @@
             <a href="dashboard.html" class="btn btn-secondary" style="text-decoration: none; padding: 6px 12px; font-size: 10pt;">⬅ Quay lại Bảng điều khiển</a>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button onclick="window.print();" class="btn btn-primary" style="padding: 6px 18px; font-size: 10pt; font-weight: bold;">
+            <button id="btnExportPDF" class="btn btn-primary" style="padding: 6px 18px; font-size: 10pt; font-weight: bold;">
                 🖨 XUẤT BẢN IN / LƯU PDF (A4)
             </button>
         </div>
@@ -256,11 +256,12 @@
         </div>
 
     </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils/mathUtils.js"></script>
     <script src="js/utils/domUtils.js"></script>
     <script src="js/core/UserAuth.js"></script>
     <script src="js/core/APIConnector.js"></script>
+    <script src="js/utils/pdfExport.js"></script>
     
     <script>
         document.addEventListener("DOMContentLoaded", () => {
