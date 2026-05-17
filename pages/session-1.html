@@ -6,8 +6,14 @@
     <title>Buổi 1: Giới thiệu Máy Kinh Vĩ & Thủy Bình | HCMUS</title>
     
     <!-- Thư viện đồ họa công thức Toán học MathJax (CDN) -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/dist/solid.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <!-- Liên kết ngược ra thư mục css/ theo đúng REPOSITORY TREE -->
     <link rel="stylesheet" href="../css/main.css">
