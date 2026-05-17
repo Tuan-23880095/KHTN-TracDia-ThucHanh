@@ -1,0 +1,247 @@
+/* ==========================================================================
+   FILE: css/dashboard.css
+   MỤC ĐÍCH: Định dạng giao diện Bảng điều khiển trung tâm (dashboard.html)
+   CÔNG NGHỆ: Sử dụng CSS Grid System và Flexbox hiện đại, Responsive
+   PHONG CÁCH: Thiết kế phẳng đồng bộ (Pure Flat Design) với main.css
+   PHÁT TRIỂN: Phục vụ học phần Trắc địa đại cương (GEO10055) - HCMUS
+   ========================================================================== */
+
+/* 1. KHUNG CHỨA TỔNG QUAN (Dashboard Layout) */
+.dashboard-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Thanh điều hướng / Tiêu đề Dashboard phẳng */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-blue);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.dashboard-title h1 {
+    font-size: 20pt;
+    color: var(--primary-blue);
+    margin-bottom: 5px;
+}
+
+/* 2. KHỐI THÔNG TIN PHÂN QUYỀN VÀ TÀI KHOẢN (User Profile Bar) */
+.user-status-bar {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 11pt;
+}
+
+.user-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-role-badge {
+    padding: 2px 8px;
+    font-size: 9pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 3px;
+    background-color: var(--primary-light);
+    color: var(--primary-blue);
+}
+
+.user-role-badge.role-teacher {
+    background-color: #f3e8ff;
+    color: #6b21a8;
+}
+
+.user-role-badge.role-leader {
+    background-color: #ecfdf5;
+    color: #065f46;
+}
+
+.btn-logout {
+    color: var(--danger-red);
+    font-weight: 600;
+    font-size: 10.5pt;
+    cursor: pointer;
+}
+.btn-logout:hover {
+    color: #bd2130;
+    text-decoration: underline;
+}
+
+/* 3. BỐ CỤC DẠNG LƯỚI TỰ ĐỘNG CO GIÃN (The Core CSS Grid System) */
+/* Tự động tính toán số cột dựa trên kích thước màn hình (Min 260px cho một Card) */
+.grid-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* 4. THIẾT KẾ CHI TIẾT THẺ BÀI HỌC THỰC HÀNH (Lesson Cards) */
+.menu-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: var(--transition-fast);
+}
+
+/* Hiệu ứng tương tác phẳng sắc nét (Chỉ đổi màu viền, không dùng shadow mờ) */
+.menu-card:hover {
+    border-color: var(--primary-blue);
+    background-color: #fcfdfe;
+    text-decoration: none;
+}
+
+.card-body {
+    margin-bottom: 15px;
+}
+
+.card-session-num {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.card-title {
+    font-size: 13pt;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    font-size: 10pt;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* Khối footer của Card chứa Trạng thái học tập */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    margin-top: auto;
+}
+
+.card-mode-indicator {
+    font-size: 9pt;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* 5. CÁC TRẠNG THÁI ĐẶC BIỆT CỦA CARD (Card States & Badges) */
+
+/* Trạng thái bài học đã hoàn thành / Đạt chuẩn */
+.menu-card.status-completed {
+    border-left: 4px solid var(--success-green);
+}
+
+/* Trạng thái bài học bị Khóa (Do chưa tới tiến độ học trên lớp) */
+.menu-card.state-locked {
+    background-color: var(--bg-stripe);
+    border-color: var(--border-color);
+    cursor: not-allowed;
+    opacity: 0.65;
+    pointer-events: none; /* Khóa tương tác click */
+}
+.menu-card.state-locked .card-title {
+    color: var(--text-light);
+}
+
+/* Buổi thi thực hành sát hạch số 9 (Special Exam Card) */
+.menu-card.type-exam {
+    background-color: #fffbeb;
+    border: 1px dashed var(--warning-orange);
+}
+.menu-card.type-exam:hover {
+    border: 1px solid var(--warning-orange);
+    background-color: #fff9db;
+}
+.menu-card.type-exam .card-title {
+    color: #b45309;
+}
+
+/* 6. GIAO DIỆN BỔ TÚC DÀNH CHO GIÁO VIÊN (Teacher Admin Panel Block) */
+.teacher-panel {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.teacher-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.teacher-grid-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-box {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 18pt;
+    font-weight: 800;
+    color: var(--primary-blue);
+}
+
+.stat-label {
+    font-size: 9.5pt;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* 7. ĐIỀU CHỈNH RESPONSIVE TRÊN THIẾT BỊ DI ĐỘNG (Mobile Media Queries) */
+@media (max-width: 640px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .user-status-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    .grid-menu {
+        grid-template-columns: 1fr; /* Chuyển về 1 cột trên màn hình điện thoại nhỏ */
+    }
+}
