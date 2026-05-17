@@ -93,7 +93,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.getElementById(`switch_${s.id}`).addEventListener("change", async function() {
                 const newStatus = this.checked ? "OPEN" : "CLOSED";
                 this.disabled = true; // Khóa tạm thời tránh nhấn liên tục (debounce)
-                
+                // VÁ BẢO MẬT: Gửi kèm MSSV (Tên đăng nhập) lấy từ Session hiện tại
+                const currentUser = UserAuth.getSession().profile;
                 const updateRes = await APIConnector.post("UPDATE_SETTING", {
                     session_id: s.id,
                     status: newStatus
