@@ -32,7 +32,7 @@ class UserAuth {
      */
     static logout() {
         localStorage.removeItem(this.STORAGE_KEY);
-        window.location.href = "/index.html";
+        window.location.href = "index.html";
     }
 
     /**
