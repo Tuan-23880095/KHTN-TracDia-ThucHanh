@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buổi 3: Thao Tác Đo Góc Bằng | HCMUS</title>
+    
+    <!-- Thư viện MathJax phục vụ vẽ các công thức trắc địa, ký hiệu toán học như β, 2C -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/dist/solid.js"></script>
+    
+    <!-- Liên kết hệ thống các tệp định dạng phẳng theo đúng REPOSITORY TREE -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    
+    <style>
+        .session-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            font-size: 10.5pt;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .tab-btn.active {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border-color: var(--primary-blue);
+        }
+        .preview-img {
+            max-width: 200px;
+            height: auto;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: block;
+        }
+        .dms-input-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .dms-input {
+            width: 55px !important;
+            padding: 6px 4px !important;
+            text-align: center;
+        }
+        .dms-label {
+            font-size: 9.5pt;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG TRÊN CÙNG -->
+    <div class="session-header">
+        <div class="layout-form-container" style="padding-top:0; padding-bottom:0;">
+            <a href="../dashboard.html" class="nav-back">⬅ Quay lại Bảng điều khiển</a>
+            <h1 style="font-size: 16pt; margin: 0;">BUỔI 3: THAO TÁC ĐO GÓC BẰNG (MÁY KINH VĨ)</h1>
+            <p class="text-muted" style="margin:0; font-size:10pt;">Học phần: Trắc địa đại cương (GEO10055) — Khoa Địa chất, Trường Đại học Khoa học Tự nhiên</p>
+        </div>
+    </div>
+
+    <div class="layout-form-container">
+        
+        <!-- THÔNG TIN TÀI KHOẢN ĐANG HOẠT ĐỘNG -->
+        <div class="flat-card" style="padding: 15px; margin-bottom: 20px; background-color: var(--primary-light); border-color: #bee5eb;">
+            <p style="margin: 0; font-size: 10.5pt;">
+                👤 Tài khoản: <strong id="userDisplayProfile">Đang tải hồ sơ...</strong> 
+                | Nhóm: <strong id="userDisplayGroup">...</strong>
+            </p>
+        </div>
+
+        <!-- THANH CHUYỂN LUỒNG BÁO CÁO (CÁ NHÂN VÀ NHÓM) -->
+        <div class="tab-container">
+            <button type="button" id="tabIndividualBtn" class="tab-btn active">PHẦN 1: BÁO CÁO CÁ NHÂN (Bắt buộc tất cả SV)</button>
+            <button type="button" id="tabGroupBtn" class="tab-btn">PHẦN 2: BÁO CÁO NHÓM (Chỉ Nhóm trưởng nộp)</button>
+        </div>
+
+        <!-- VÙNG HIỂN THỊ CẢNH BÁO SAI SỐ/ĐẠT CHUẨN QC -->
+        <div id="validationAlert" class="alert-box alert-danger hidden"></div>
+
+        <!-- ========================================== -->
+        <!-- KHỐI FORM 1: KIỂM TRA THAO TÁC CÁ NHÂN -->
+        <!-- ========================================== -->
+        <form id="individualForm" class="space-y-4">
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>I. SỐ ĐO HƯỚNG BẰNG ĐỂ KIỂM TRA SAI SỐ 2C</h3>
+                    <p class="text-muted" style="font-size: 9.5pt; margin: 0;">Mỗi cá nhân tự đặt máy kinh vĩ tại trạm mốc $O$, ngắm chuẩn vào mốc tiêu $A$, đọc bàn độ ngang ở hai vị trí Thuận kính ($T$) và Đảo kính ($P$). Mục đích kiểm tra khả năng triệt tiêu sai số hình học và tính trị số $2C$.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="indStationName">Tên vị trí mốc đặt máy ($O$):<span class="required">*</span></label>
+                    <input type="text" id="indStationName" class="form-input" placeholder="Ví dụ: Trạm O1" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="indTargetName">Tên mốc tiêu ngắm đến ($A$):<span class="required">*</span></label>
+                    <input type="text" id="indTargetName" class="form-input" placeholder="Ví dụ: Mốc A" required>
+                </div>
+
+                <!-- BẢNG NHẬP LIỆU GÓC THEO ĐỘ - PHÚT - GIÂY DÀNH CHO CÁ NHÂN -->
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="flat-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Vị trí bàn độ ngang</th>
+                                <th style="width: 50%;">Số đọc trị số bàn độ ngang (DMS)</th>
+                                <th style="width: 25%;">Hạn mức sai số hạn định</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Thuận kính ($T$)</td>
+                                <td>
+                                    <div class="dms-input-container">
+                                        <input type="number" id="ind_T_d" class="form-input dms-input" placeholder="Độ" min="0" max="359" required>
+                                        <span class="dms-label">°</span>
+                                        <input type="number" id="ind_T_m" class="form-input dms-input" placeholder="Phút" min="0" max="59" required>
+                                        <span class="dms-label">'</span>
+                                        <input type="number" id="ind_T_s" class="form-input dms-input" placeholder="Giây" min="0" max="59" required>
+                                        <span class="dms-label">"</span>
+                                    </div>
+                                </td>
+                                <td rowspan="2" style="vertical-align: middle; font-weight: 600; color: var(--danger-red);">
+                                    $|2C| \le 60"$ <br><span style="font-size:8.5pt; font-weight:normal; color:var(--text-muted);">(Đối với máy luyện tập)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Đảo kính ($P$)</td>
+                                <td>
+                                    <div class="dms-input-container">
+                                        <input type="number" id="ind_P_d" class="form-input dms-input" placeholder="Độ" min="0" max="359" required>
+                                        <span class="dms-label">°</span>
+                                        <input type="number" id="ind_P_m" class="form-input dms-input" placeholder="Phút" min="0" max="59" required>
+                                        <span class="dms-label">'</span>
+                                        <input type="number" id="ind_P_s" class="form-input dms-input" placeholder="Giây" min="0" max="59" required>
+                                        <span class="dms-label">"</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="background-color: #fffde7; font-weight: bold;">
+                                <td>KẾT QUẢ TÍNH TOÁN</td>
+                                <td class="text-left" style="padding-left:15px; font-size:10pt;">
+                                    <div>- Trị số $2C$ tính toán: <strong id="ind_2c_val" style="color:var(--danger-red);">0"</strong></div>
+                                    <div style="margin-top:4px;">- Hướng đã triệt tiêu sai số: <strong id="ind_corr_angle" class="text-primary">0° 00' 00"</strong></div>
+                                </td>
+                                <td id="ind_qc_badge"><span class="flat-badge text-light">Chưa tính</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- HỒ SƠ MINH CHỨNG CÁ NHÂN -->
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>II. HỒ SƠ MINH CHỨNG HIỆN TRƯỜNG</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh Selfie cá nhân phối hợp với trạm máy Kinh vĩ tại thực địa:<span class="required">*</span></label>
+                    <input type="file" id="indSelfieFile" class="form-input" accept="image/*" required>
+                    <img id="indSelfiePreview" class="preview-img hidden" alt="Preview Selfie">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh chụp sát màn hình hiển thị LCD của máy kinh vĩ chốt số đọc Thuận/Đảo:<span class="required">*</span></label>
+                    <input type="file" id="indInstFile" class="form-input" accept="image/*" required>
+                    <img id="indInstPreview" class="preview-img hidden" alt="Preview Instrument">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="indComment">Nhật ký thu hoạch cá nhân (Mô tả cách lấy nét lưới chỉ thập và triệt tiêu sai số ngắm liếc góc):</label>
+                    <textarea id="indComment" class="form-textarea" rows="3" placeholder="Điều quang vật kính rõ nét mốc tiêu, vặn tinh chỉnh vi động nhẹ nhàng..."></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmitIndividual" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    NỘP BÁO CÁO CÁ NHÂN BUỔI 3
+                </button>
+            </div>
+        </form>
+
+        <!-- ========================================== -->
+        <!-- KHỐI FORM 2: KIỂM TRA ĐỒNG BỘ CỦA TỔ CHỨC NHÓM -->
+        <!-- ========================================== -->
+        <form id="groupForm" class="space-y-4 hidden">
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>I. SỔ ĐO TỔNG HỢP ĐO GÓC BẰNG PHƯƠNG PHÁP ĐƠN GIẢN (3 LẦN ĐO)</h3>
+                    <p class="text-muted" style="font-size: 9.5pt; margin: 0;">Tuân thủ nghiêm ngặt nguyên tắc đo 3 lần độc lập và lấy trung bình. Nhóm trưởng tổng hợp trị số góc bằng $ eta = 	ext{Hướng Phải} - 	ext{Hướng Trái}$ thu được từ 3 lần đo (mỗi lần đo phải thay đổi vị trí bàn độ ngang ban đầu để triệt tiêu sai số ngẫu nhiên).</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpStationO">Tên mốc đặt trạm máy ($O$):<span class="required">*</span></label>
+                    <input type="text" id="grpStationO" class="form-input" placeholder="Ví dụ: Mốc mốc trung tâm O" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpTargetLeft">Mục tiêu ngắm Trái ($A$):<span class="required">*</span></label>
+                    <input type="text" id="grpTargetLeft" class="form-input" placeholder="Điểm mốc đầu kỳ" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpTargetRight">Mục tiêu ngắm Phải ($B$):<span class="required">*</span></label>
+                    <input type="text" id="grpTargetRight" class="form-input" placeholder="Điểm mốc cuối kỳ" required>
+                </div>
+
+                <!-- BẢNG BIỂU ĐO GÓC 3 LẦN CỦA LUỒNG NHÓM -->
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="flat-table" style="font-size:10pt;">
+                        <thead>
+                            <tr>
+                                <th>Vòng đo</th>
+                                <th>Mục tiêu ngắm</th>
+                                <th>Thuận kính ($T$)</th>
+                                <th>Đảo kính ($P$)</th>
+                                <th>Hướng cải chính (Trung bình)</th>
+                                <th>Góc bằng $ eta_i$ từng vòng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Lần đo 1 -->
+                            <tr>
+                                <td rowspan="2" style="vertical-align: middle; font-weight: bold; background-color: var(--bg-main);">Vòng 1 ($r_1$)</td>
+                                <td>Trái ($A$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r1_ta_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r1_ta_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r1_ta_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r1_pa_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r1_pa_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r1_pa_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r1_a_avg">0° 00' 00"</td>
+                                <td rowspan="2" id="r1_beta_display" style="vertical-align: middle; font-weight: 700; color: var(--primary-blue);">0° 00' 00"</td>
+                            </tr>
+                            <tr>
+                                <td>Phải ($B$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r1_tb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r1_tb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r1_tb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r1_pb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r1_pb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r1_pb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r1_b_avg">0° 00' 00"</td>
+                            </tr>
+                            
+                            <!-- Lần đo 2 -->
+                            <tr>
+                                <td rowspan="2" style="vertical-align: middle; font-weight: bold; background-color: var(--bg-main);">Vòng 2 ($r_2$)</td>
+                                <td>Trái ($A$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r2_ta_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r2_ta_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r2_ta_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r2_pa_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r2_pa_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r2_pa_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r2_a_avg">0° 00' 00"</td>
+                                <td rowspan="2" id="r2_beta_display" style="vertical-align: middle; font-weight: 700; color: var(--primary-blue);">0° 00' 00"</td>
+                            </tr>
+                            <tr>
+                                <td>Phải ($B$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r2_tb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r2_tb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r2_tb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r2_pb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r2_pb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r2_pb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r2_b_avg">0° 00' 00"</td>
+                            </tr>
+                            
+                            <!-- Lần đo 3 -->
+                            <tr>
+                                <td rowspan="2" style="vertical-align: middle; font-weight: bold; background-color: var(--bg-main);">Vòng 3 ($r_3$)</td>
+                                <td>Trái ($A$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r3_ta_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r3_ta_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r3_ta_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r3_pa_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r3_pa_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r3_pa_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r3_a_avg">0° 00' 00"</td>
+                                <td rowspan="2" id="r3_beta_display" style="vertical-align: middle; font-weight: 700; color: var(--primary-blue);">0° 00' 00"</td>
+                            </tr>
+                            <tr>
+                                <td>Phải ($B$)</td>
+                                <td><div class="dms-input-container"><input type="number" id="r3_tb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r3_tb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r3_tb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td><div class="dms-input-container"><input type="number" id="r3_pb_d" class="form-input dms-input" placeholder="°" required><input type="number" id="r3_pb_m" class="form-input dms-input" placeholder="'" required><input type="number" id="r3_pb_s" class="form-input dms-input" placeholder='"' required></div></td>
+                                <td id="r3_b_avg">0° 00' 00"</td>
+                            </tr>
+                            
+                            <!-- Dòng tổng hợp kết quả trung bình -->
+                            <tr style="background-color: #fffde7; font-weight: bold; font-size:10.5pt;">
+                                <td colspan="5" class="text-right" style="padding-right:15px;">GÓC BẰNG TRUNG BÌNH CUỐI CÙNG ($ eta_{tb}$)</td>
+                                <td id="grp_beta_avg" class="col-highlight" style="font-size:11pt; color:var(--danger-red);">0° 00' 00"</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MINH CHỨNG VÀ DRIVE SYNC -->
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>II. HỒ SƠ MINH CHỨNG VÀ PHÂN CÔNG ĐỘI NGŨ NHÓM</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpPortfolioUrl">Đường dẫn liên kết Folder lưu dữ liệu ảnh trắc địa nhóm (Google Drive):<span class="required">*</span></label>
+                    <input type="url" id="grpPortfolioUrl" class="form-input" placeholder="https://drive.google.com/open?id=..." required>
+                    <p class="text-muted" style="font-size: 8.5pt; margin-top: 4px;">
+                        Quy định kỹ thuật Khoa Địa chất: Toàn bộ ảnh ghi sổ đo nháp của các thành viên phải đồng bộ vào Folder hệ thống có mã ID: 
+                        <strong style="color:var(--primary-blue);">1eM0GW-K-zIh_1MlWLAG-pbapILHmN8aI</strong>.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh chụp toàn cảnh nhóm đang phối hợp đo hướng ngắm bàn độ tại thực địa:<span class="required">*</span></label>
+                    <input type="file" id="grpPhotoFile" class="form-input" accept="image/*" required>
+                    <img id="grpPhotoPreview" class="preview-img hidden" alt="Preview Group">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpComment">Nhận xét nhật ký đo đạc nhóm (Ghi rõ phân công: ai ngắm máy, ai ghi sổ nháp, ai dựng tiêu):</label>
+                    <textarea id="grpComment" class="form-textarea" rows="3" placeholder="Nhóm trưởng ghi sổ đạc nháp, thành viên A ngắm kính thuận, thành viên B ngắm kính đảo, sự phân công phối hợp diễn ra trơn tru..."></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmitGroup" class="btn btn-success" style="width: 100%; margin-top: 15px;">
+                    NỘP BÁO CÁO TỔNG HỢP NHÓM BUỔI 3
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- HỆ THỐNG ĐẤU NỐI SCRIPT TĨNH ĐỒNG BỘ THEO KIẾN TRÚC -->
+    <!-- ========================================== -->
+    <script src="../js/utils/mathUtils.js"></script>
+    <script src="../js/core/APIConnector.js"></script>
+    <script src="../js/core/UserAuth.js"></script>
+    
+    <!-- Các lớp đối tượng Model kế thừa OOP -->
+    <script src="../js/models/Measurement.js"></script>
+    <script src="../js/models/Theodolite.js"></script>
+    <script src="../js/models/Level.js"></script>
+    
+    <!-- Bộ điều khiển nhận diện sự kiện Form -->
+    <script src="../js/controllers/sessionCtrl.js"></script>
+
+</body>
+</html>
