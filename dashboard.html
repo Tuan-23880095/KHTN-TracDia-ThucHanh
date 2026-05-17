@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng điều khiển | Hệ thống Thực hành Trắc địa | HCMUS</title>
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+    <div class="dashboard-wrapper">
+        
+        <header class="dashboard-header">
+            <div class="dashboard-title">
+                <h1>Hệ Thống Thực Hành Trắc Địa</h1>
+                <p class="text-muted font-medium">Học phần: Trắc địa đại cương (GEO10055) — Khoa Địa chất</p>
+            </div>
+            <div class="header-logo text-right">
+                <p class="font-bold text-primary" style="font-size: 11pt; tracking-widest;">HCMUS</p>
+            </div>
+        </header>
+
+        <div class="user-status-bar">
+            <div class="user-meta">
+                <span class="font-bold text-dark" id="displayFullName">Đang tải tên...</span>
+                <span class="text-muted">|</span>
+                <span class="text-muted">MSSV: <strong id="displayMssv">...</strong></span>
+                <span class="text-muted">|</span>
+                <span class="text-muted">Nhóm: <strong id="displayGroupId">...</strong></span>
+                <span id="userRoleBadge" class="user-role-badge">Student</span>
+            </div>
+            <div>
+                <span id="btnLogout" class="btn-logout">Đăng xuất ➔</span>
+            </div>
+        </div>
+
+        <section id="teacherPanel" class="teacher-panel hidden">
+            <div class="teacher-panel-header">
+                <h3 class="text-primary">BẢNG SỐ LIỆU GIÁM SÁT REAL-TIME (GIẢNG VIÊN)</h3>
+                <span class="flat-badge badge-success">Hệ thống trực tuyến</span>
+            </div>
+            <div class="teacher-grid-stats">
+                <div class="stat-box">
+                    <div class="stat-value" id="statTotalStudents">180</div>
+                    <div class="stat-label">Sinh viên đăng ký</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statSubmittedToday">0</div>
+                    <div class="stat-label">Bài nộp ca hiện tại</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="statPendingQC">0</div>
+                    <div class="stat-label">Cảnh báo sai số khép vượt hạn</div>
+                </div>
+            </div>
+        </section>
+
+        <main class="grid-menu">
+            
+            <a href="pages/session-1.html" class="menu-card" id="card-session-1">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 1</div>
+                    <div class="card-title">Giới thiệu Máy Kinh Vĩ và Thủy Bình</div>
+                    <div class="card-desc">Nhận diện cấu tạo thiết bị, tập ngắm tiêu và tập đọc trị số trên mia thô.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Cá nhân</span>
+                    <span class="flat-badge text-muted" id="status-text-1">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-2.html" class="menu-card" id="card-session-2">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 2</div>
+                    <div class="card-title">Thao Tác Cân Bằng Máy và Định Tâm</div>
+                    <div class="card-desc">Huấn luyện kỹ năng định tâm chính xác sơ bộ và cân bằng bọt thủy dài dưới áp lực bấm giờ.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Cá nhân</span>
+                    <span class="flat-badge text-muted" id="status-text-2">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-3.html" class="menu-card" id="card-session-3">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 3</div>
+                    <div class="card-title">Thao Tác Đo Góc Bằng</div>
+                    <div class="card-desc">Thực hiện phương pháp đo đơn giản góc bằng, triệt tiêu sai số bằng đo thuận kính và đảo kính.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Nhóm</span>
+                    <span class="flat-badge text-muted" id="status-text-3">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-4.html" class="menu-card" id="card-session-4">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 4</div>
+                    <div class="card-title">Thao Tác Đo Góc Đứng và Đo Cao Lượng Giác</div>
+                    <div class="card-desc">Xác định trị số bàn độ đứng, tính chỉ số MO, tính góc đứng và chênh cao lượng giác trạm máy.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Cá nhân</span>
+                    <span class="flat-badge text-muted" id="status-text-4">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-5.html" class="menu-card" id="card-session-5">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 5</div>
+                    <div class="card-title">Đo Dài Bằng Chỉ Lượng Cự Trên Máy Kinh Vĩ</div>
+                    <div class="card-desc">Đọc số khoảng cách dựa vào khoảng chênh lệch chỉ trên/chỉ dưới và góc đứng bàn độ đứng.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Cá nhân</span>
+                    <span class="flat-badge text-muted" id="status-text-5">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-6.html" class="menu-card" id="card-session-6">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 6</div>
+                    <div class="card-title">Thao Tác Đo Chênh Cao Bằng Máy Thủy Bình</div>
+                    <div class="card-desc">Đo cao hình học từ giữa, đọc số mia sau/mia trước và kiểm định sai số góc i của trạm máy.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Cá nhân</span>
+                    <span class="flat-badge text-muted" id="status-text-6">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-7.html" class="menu-card" id="card-session-7">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 7</div>
+                    <div class="card-title">Dẫn Chuyền Cao Độ Tuyến Kín</div>
+                    <div class="card-desc">Liên kết các trạm đo hình học thành mạng lưới đường chuyền cao độ khép kín ngoài thực địa.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Nhóm</span>
+                    <span class="flat-badge text-muted" id="status-text-7">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-8.html" class="menu-card" id="card-session-8">
+                <div class="card-body">
+                    <div class="card-session-num">Buổi 8</div>
+                    <div class="card-title">Bình Sai Lưới Đường Chuyền Cao Độ Hình Học</div>
+                    <div class="card-desc">Tính toán sai số khép tổng, phân bổ số hiệu chỉnh tỷ lệ theo khoảng cách để ra cao độ hoàn công.</div>
+                </div>
+                <div class="card-footer">
+                    <span class="card-mode-indicator">Chế độ: Nhóm (Nội nghiệp)</span>
+                    <span class="flat-badge text-muted" id="status-text-8">Chưa nộp</span>
+                </div>
+            </a>
+
+            <a href="pages/session-9.html" class="menu-card type-exam" id="card-session-9">
+                <div class="card-body">
+                    <div class="card-session-num" style="color: #b45309;">Buổi 9</div>
+                    <div class="card-title">Sát Hạch Thực Hành Tổng Hợp</div>
+                    <div class="card-desc">Bài thi thực chiến hiện trường. Bốc đề thi ngẫu nhiên, khóa thời gian đếm ngược và kiểm tra thi hộ.</div>
+                </div>
+                <div class="card-footer" style="border-top-color: #fde68a;">
+                    <span class="card-mode-indicator" style="color: #b45309;">Chế độ: Thi kiểm tra</span>
+                    <span class="flat-badge badge-warning" id="status-text-9">SẴN SÀNG THI</span>
+                </div>
+            </a>
+
+        </main>
+    </div>
+
+    <script src="js/core/APIConnector.js"></script>
+    <script src="js/core/UserAuth.js"></script>
+    
+    <script src="js/controllers/dashboardCtrl.js"></script>
+
+</body>
+</html>
