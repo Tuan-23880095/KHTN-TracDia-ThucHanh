@@ -69,11 +69,11 @@ class DOMUtils {
         }
     }
 
-    /**
+   /**
      * Gắn chuỗi kết quả vào một phần tử và tự động đổi màu chữ đánh giá
      * @param {string} elementId - ID của thẻ (VD: 'ind_h_avg')
      * @param {string} text - Nội dung hiển thị (VD: '1.250 m')
-     * @param {string} colorClass - Class màu text (VD: 'text-danger', 'text-success', 'text-primary')
+     * @param {string} colorClass - Class màu text (VD: 'text-danger', 'text-success font-bold')
      */
     static setText(elementId, text, colorClass = null) {
         const el = document.getElementById(elementId);
@@ -84,7 +84,11 @@ class DOMUtils {
         if (colorClass) {
             // Xóa các class màu văn bản cũ có thể có
             el.classList.remove('text-danger', 'text-success', 'text-primary', 'text-muted', 'text-warning');
-            el.classList.add(colorClass);
+            
+            // CÁCH SỬA Ở ĐÂY:
+            // Cắt chuỗi theo khoảng trắng và thêm từng class vào để tránh lỗi InvalidCharacterError
+            const classes = colorClass.split(' ').filter(c => c.trim() !== '');
+            el.classList.add(...classes);
         }
     }
 
