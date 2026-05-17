@@ -55,16 +55,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Xử lý hành động Click nút Quên mật khẩu
     if (btnForgotPassword) {
-        btnForgotPassword.addEventListener("click", () => {
+        btnForgotPassword.addEventListener("click", async (e) => {
+            e.preventDefault(); // Ngăn hành vi mặc định nếu là thẻ <a> hoặc <button>
+            
             const mssvField = document.getElementById("mssv");
             const mssv = mssvField ? mssvField.value.trim() : "";
 
-            // Kiểm tra tính hợp lệ dữ liệu đầu vào phía Client trước khi cảnh báo
+            // Kiểm tra tính hợp lệ dữ liệu đầu vào phía Client
             if (!mssv) {
-                alert("Hệ thống yêu cầu: Vui lòng nhập Mã số sinh viên (MSSV) của bạn vào ô trống trước khi bấm liên kết này.");
+                alert("Hệ thống yêu cầu: Vui lòng nhập Mã số sinh viên (MSSV) của bạn vào ô trống trước khi bấm Quên mật khẩu.");
                 if (mssvField) mssvField.focus();
-            } else {
-                alert(`Yêu cầu cấp lại mật khẩu cho tài khoản [${mssv}] đã được gửi đi.\nHệ thống tự động liên kết với cấu trúc Email sinh viên ĐHQG.\nVui lòng kiểm tra hộp thư dạng: ${mssv}@student.hcmus.edu.vn để thiết lập mật khẩu tạm thời mới.`);
+                return;
+            } 
+
+            // Cập nhật giao diện (UX) để sinh viên biết hệ thống đang xử lý
+            const originalText = btnForgotPassword.innerHTML;
+            btnForgotPassword.innerHTML = "ĐANG GỬI EMAIL...";
+            btnForgotPassword.style.pointerEvents = "none";
+            btnForgotPassword.style.opacity = "0.7";
+
+            try {
+                // GỌI API THỰC TẾ: Chuyển yêu cầu xuống tầng Network (UserAuth -> APIConnector -> GAS)
+                const result = await UserAuth.forgotPassword(mssv);
+
+                if (result.success) {
+                    // Thành công: Backend đã tìm thấy MSSV và gửi email
+                    alert(`✅ THÀNH CÔNG!\n${result.message}`);
+                } else {
+                    // Thất bại: Không tìm thấy MSSV hoặc lỗi mạng
+                    alert(`🚨 LỖI: ${result.message}`);
+                }
+            } catch (error) {
+                alert("🚨 Đã có lỗi xảy ra trong quá trình gửi yêu cầu. Vui lòng thử lại sau.");
+                console.error(error);
+            } finally {
+                // Khôi phục lại trạng thái nút bấm ban đầu
+                btnForgotPassword.innerHTML = originalText;
+                btnForgotPassword.style.pointerEvents = "auto";
+                btnForgotPassword.style.opacity = "1";
             }
         });
     }
