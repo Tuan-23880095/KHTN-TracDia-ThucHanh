@@ -116,25 +116,81 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // 4. THEO DÕI REAL-TIME SỐ LIỆU KHOẢNG CÁCH LƯỢNG CỰ CỦA NHÓM
-    const grpInputs = ["grp_top", "grp_bottom"];
+    // =========================================================================
+    // 4. THEO DÕI REAL-TIME SỐ LIỆU KHOẢNG CÁCH LƯỢNG CỰ CỦA NHÓM (3 LẦN ĐO)
+    // =========================================================================
+    const grpInputs = ["grp_ct1", "grp_cd1", "grp_ct2", "grp_cd2", "grp_ct3", "grp_cd3"];
     grpInputs.forEach(id => {
         const inputEl = document.getElementById(id);
         if (inputEl) {
             inputEl.addEventListener("input", () => {
-                const top = DOMUtils.getNumberValue("grp_top"); // Chỉ số trên
-                const bottom = DOMUtils.getNumberValue("grp_bottom"); // Chỉ số dưới
+                // Lấy giá trị 3 lần đo
+                const ct1 = DOMUtils.getNumberValue("grp_ct1");
+                const cd1 = DOMUtils.getNumberValue("grp_cd1");
+                const ct2 = DOMUtils.getNumberValue("grp_ct2");
+                const cd2 = DOMUtils.getNumberValue("grp_cd2");
+                const ct3 = DOMUtils.getNumberValue("grp_ct3");
+                const cd3 = DOMUtils.getNumberValue("grp_cd3");
 
-                if (!isNaN(top) && !isNaN(bottom)) {
-                    if (top < bottom) {
-                        DOMUtils.setText("grp_d_avg", "LỖI MIA", "text-danger font-bold");
-                        DOMUtils.showAlert("validationAlert", "Lỗi: Chỉ số trên không thể nhỏ hơn chỉ số dưới!", "danger");
-                        return;
+                let d1 = 0, d2 = 0, d3 = 0;
+                let validCount = 0;
+                let sumD = 0;
+
+                // Công thức tính khoảng cách D (mét): (Chỉ trên_mm - Chỉ dưới_mm) / 10
+                const calcD = (t, b) => (t - b) / 10;
+
+                // Xử lý Lần 1
+                if (!isNaN(ct1) && !isNaN(cd1)) {
+                    if (ct1 <= cd1) {
+                        DOMUtils.setText("grp_d1_display", "LỖI MIA", "text-danger font-bold");
+                    } else {
+                        d1 = calcD(ct1, cd1);
+                        DOMUtils.setText("grp_d1_display", `${d1.toFixed(3)} m`, "text-success");
+                        sumD += d1; validCount++;
                     }
-                    // Công thức lượng cự ngắm ngang hình học: D = (Chỉ trên - Chỉ dưới) * 100
-                    const distance = (top - bottom) * 100;
-                    DOMUtils.setText("grp_d_avg", `${distance.toFixed(2)} m`, "text-success font-bold");
+                } else { DOMUtils.setText("grp_d1_display", "0.000 m", "text-muted"); }
+
+                // Xử lý Lần 2
+                if (!isNaN(ct2) && !isNaN(cd2)) {
+                    if (ct2 <= cd2) {
+                        DOMUtils.setText("grp_d2_display", "LỖI MIA", "text-danger font-bold");
+                    } else {
+                        d2 = calcD(ct2, cd2);
+                        DOMUtils.setText("grp_d2_display", `${d2.toFixed(3)} m`, "text-success");
+                        sumD += d2; validCount++;
+                    }
+                } else { DOMUtils.setText("grp_d2_display", "0.000 m", "text-muted"); }
+
+                // Xử lý Lần 3
+                if (!isNaN(ct3) && !isNaN(cd3)) {
+                    if (ct3 <= cd3) {
+                        DOMUtils.setText("grp_d3_display", "LỖI MIA", "text-danger font-bold");
+                    } else {
+                        d3 = calcD(ct3, cd3);
+                        DOMUtils.setText("grp_d3_display", `${d3.toFixed(3)} m`, "text-success");
+                        sumD += d3; validCount++;
+                    }
+                } else { DOMUtils.setText("grp_d3_display", "0.000 m", "text-muted"); }
+
+                // Đánh giá QC khi đã nhập đủ 3 lần
+                if (validCount === 3) {
+                    const avgD = sumD / 3;
+                    const amplitude = MathUtils.calculateAmplitude([d1, d2, d3]);
+                    const tolerance = 0.2; // Cho phép chênh lệch tối đa 0.2m (20cm) giữa các lần đo
+
+                    if (amplitude <= tolerance) {
+                        DOMUtils.setText("grp_d_avg", `${avgD.toFixed(3)} m`, "text-success font-bold");
+                        DOMUtils.hideAlert("validationAlert");
+                        if (document.getElementById("btnSubmitGroup")) document.getElementById("btnSubmitGroup").disabled = false;
+                    } else {
+                        DOMUtils.setText("grp_d_avg", "VƯỢT HẠN MỨC", "text-danger font-bold");
+                        DOMUtils.showAlert("validationAlert", `⚠️ Sai số quá lớn! Độ lệch lớn nhất giữa các lần đo là ${amplitude.toFixed(3)}m (Cho phép $\\le 0.2m$). Yêu cầu đo lại!`, "danger");
+                        if (document.getElementById("btnSubmitGroup")) document.getElementById("btnSubmitGroup").disabled = true;
+                    }
+                } else {
+                    DOMUtils.setText("grp_d_avg", "Chưa đủ dữ liệu", "text-muted font-bold");
                     DOMUtils.hideAlert("validationAlert");
+                    if (document.getElementById("btnSubmitGroup")) document.getElementById("btnSubmitGroup").disabled = true;
                 }
             });
         }
@@ -202,8 +258,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         });
     }
-
-    // Luồng B: Xử lý nộp dữ liệu NHÓM
+    // =========================================================================
+    // 5B. LUỒNG B: XỬ LÝ NỘP DỮ LIỆU NHÓM LÊN SERVER
+    // =========================================================================
     const formGrp = document.getElementById("groupForm");
     if (formGrp) {
         formGrp.addEventListener("submit", async (e) => {
@@ -214,31 +271,46 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            const top = DOMUtils.getNumberValue("grp_top");
-            const bottom = DOMUtils.getNumberValue("grp_bottom");
-            const comment = document.getElementById("grp_comment") ? document.getElementById("grp_comment").value : "";
-            const grpImg = document.getElementById("grpPhotoPreview") ? document.getElementById("grpPhotoPreview").src : "";
+            // Lấy lại giá trị lúc submit
+            const ct1 = DOMUtils.getNumberValue("grp_ct1");
+            const cd1 = DOMUtils.getNumberValue("grp_cd1");
+            const ct2 = DOMUtils.getNumberValue("grp_ct2");
+            const cd2 = DOMUtils.getNumberValue("grp_cd2");
+            const ct3 = DOMUtils.getNumberValue("grp_ct3");
+            const cd3 = DOMUtils.getNumberValue("grp_cd3");
 
-            if (isNaN(top) || !top || isNaN(bottom) || !bottom) {
-                alert("Vui lòng điền đầy đủ dữ liệu chỉ tiêu kỹ thuật đo lượng cự!");
+            if (isNaN(ct1) || isNaN(cd1) || isNaN(ct2) || isNaN(cd2) || isNaN(ct3) || isNaN(cd3)) {
+                alert("Vui lòng điền đầy đủ dữ liệu chỉ tiêu kỹ thuật đo lượng cự 3 lần!");
                 return;
             }
+
+            const d1 = (ct1 - cd1) / 10;
+            const d2 = (ct2 - cd2) / 10;
+            const d3 = (ct3 - cd3) / 10;
+            const avgDistance = (d1 + d2 + d3) / 3;
+
+            const targetName = document.getElementById("grpTargetName") ? document.getElementById("grpTargetName").value : "Tuyến đo";
+            const comment = document.getElementById("grpComment") ? document.getElementById("grpComment").value : "";
+            const grpImg = document.getElementById("grpPhotoPreview") ? document.getElementById("grpPhotoPreview").src : "";
 
             const btn = document.getElementById("btnSubmitGroup");
             btn.innerHTML = "⏳ ĐANG ĐỒNG BỘ SỔ ĐO NHÓM...";
             btn.disabled = true;
 
-            const calculatedDistance = (top - bottom) * 100;
-
             const payload = {
                 session_name: "1",
                 submit_type: "Nhóm",
-                student_id: session.profile.mssv_id, // MSSV của nhóm trưởng đại diện nộp
+                student_id: session.profile.mssv_id,
                 student_name: session.profile.full_name,
                 group_id: session.profile.group_id,
                 machine_type: "Đo khoảng cách lượng cự ngắm ngang",
-                target_name: "Tuyến đo thực địa nội khu",
-                result_avg: { chỉ_trên: top, chỉ_dưới: bottom, khoảng_cách_m: calculatedDistance },
+                target_name: targetName,
+                result_avg: { 
+                    d1_m: d1, 
+                    d2_m: d2, 
+                    d3_m: d3, 
+                    khoang_cach_trung_binh_m: avgDistance 
+                },
                 qc_evaluation: "ĐẠT CHUẨN HÌNH HỌC",
                 individual_photo_base64: "",
                 group_photo_base64: grpImg.startsWith("data:image") ? grpImg : "",
@@ -252,14 +324,15 @@ document.addEventListener("DOMContentLoaded", async () => {
                     window.location.href = "../dashboard.html";
                 } else {
                     alert(`⛔ Lỗi: ${response.message}`);
-                    btn.innerHTML = "NỘP BÁO CÁO NHÓM ➜";
+                    btn.innerHTML = "NỘP BÁO CÁO TỔNG HỢP NHÓM";
                     btn.disabled = false;
                 }
             } catch (err) {
                 alert("🚨 Thất bại: Đường truyền kết nối API lên Cloud bị ngắt quãng!");
-                btn.innerHTML = "NỘP BÁO CÁO NHÓM ➜";
+                btn.innerHTML = "NỘP BÁO CÁO TỔNG HỢP NHÓM";
                 btn.disabled = false;
             }
         });
     }
+  
 });
