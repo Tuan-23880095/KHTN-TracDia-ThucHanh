@@ -74,6 +74,31 @@ class UserAuth {
         }
         return { success: false, message: result?.message || "Lỗi kết nối máy chủ!" };
     }
+    /**
+     * Kiểm tra quyền hạn theo cấp bậc (Hierarchical Access)
+     * Giáo viên (3) > Nhóm trưởng (2) > Sinh viên (1)
+     * @param {string} requiredRole - Cấp quyền tối thiểu cần có (VD: "leader")
+     * @returns {boolean} - Trả về true nếu đủ hoặc dư quyền
+     */
+    static hasAccess(requiredRole) {
+        const session = this.getSession();
+        if (!session) return false; // Chưa đăng nhập thì không có quyền gì cả
+
+        const userRole = session.profile.role; // Lấy role hiện tại của user
+
+        // Định nghĩa bảng điểm quyền lực
+        const roleLevels = {
+            "student": 1,
+            "leader": 2,
+            "teacher": 3
+        };
+
+        const currentLevel = roleLevels[userRole] || 0;
+        const requiredLevel = roleLevels[requiredRole] || 0;
+
+        // Nếu điểm quyền lực hiện tại LỚN HƠN HOẶC BẰNG điểm yêu cầu -> Cho phép qua cổng!
+        return currentLevel >= requiredLevel;
+    }
 
     /**
      * Hàm chặn rò rỉ an ninh nội bộ. Đặt ở đầu các file dashboard.html hoặc các bài thực hành
