@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 if (!isNaN(r1) && !isNaN(r2) && !isNaN(r3)) {
                     // Buổi 1: Giới hạn chênh lệch tối đa giữa các lần ngắm ngẫu nhiên là 3.0 mm
                     const measurementData = new Measurement("Số đọc mia cá nhân", r1, r2, r3, 3.0);
-                    const avg = measurementData.calculateAverage();
+                    const avg = measurementData.getAverage();
                     const qc = measurementData.validateQC();
 
                     if (qc.passed) {
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 group_id: session.profile.group_id,
                 machine_type: "Máy Thủy Bình / Kinh Vĩ",
                 target_name: "Mia thực nghiệm trạm đơn",
-                result_avg: { r1, r2, r3, average: measurementData.calculateAverage() },
+                result_avg: { r1, r2, r3, average: measurementData.getAverage() },
                 qc_evaluation: `ĐẠT CHUẨN (Biên độ lệch: ${qcCheck.message})`,
                 individual_photo_base64: selfieImg.startsWith("data:image") ? selfieImg : "",
                 group_photo_base64: instImg.startsWith("data:image") ? instImg : "",
