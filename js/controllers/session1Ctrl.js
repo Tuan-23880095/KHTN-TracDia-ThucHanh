@@ -287,6 +287,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
     // =========================================================================
+    // LUỒNG XỬ LÝ SỰ KIỆN NÚT IN ẤN SỔ ĐO NHÓM
+    // =========================================================================
+    const btnPrintGrp = document.getElementById("btnPrintGroup");
+    if (btnPrintGrp) {
+        btnPrintGrp.addEventListener("click", () => {
+            // Lấy dữ liệu để kiểm tra xem Nhóm trưởng đã nhập đủ chưa
+            const targetName = document.getElementById("grpTargetName") ? document.getElementById("grpTargetName").value : "";
+            const ct1 = DOMUtils.getNumberValue("grp_ct1");
+            const cd1 = DOMUtils.getNumberValue("grp_cd1");
+            const ct2 = DOMUtils.getNumberValue("grp_ct2");
+            const cd2 = DOMUtils.getNumberValue("grp_cd2");
+            const ct3 = DOMUtils.getNumberValue("grp_ct3");
+            const cd3 = DOMUtils.getNumberValue("grp_cd3");
+
+            // Bắt buộc nhập Tên tuyến và đủ 3 lần đo mới cho in
+            if (!targetName || isNaN(ct1) || isNaN(cd1) || isNaN(ct2) || isNaN(cd2) || isNaN(ct3) || isNaN(cd3)) {
+                alert("⚠️ Yêu cầu: Vui lòng nhập Tên tuyến đo (Mục tiêu) và hoàn thành đầy đủ 3 lần đo lượng cự trước khi xuất phiếu in!");
+                return;
+            }
+
+            // GỌI LỆNH IN TIÊU CHUẨN CỦA TRÌNH DUYỆT
+            window.print();
+        });
+    }
+    // =========================================================================
     // 5B. LUỒNG B: XỬ LÝ NỘP DỮ LIỆU NHÓM LÊN SERVER
     // =========================================================================
     const formGrp = document.getElementById("groupForm");
