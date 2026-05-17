@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         tabGrpBtn.addEventListener("click", () => {
-            if (session.profile.role !== "leader" && session.profile.role !== "teacher") {
-                alert("⛔ Nghiệm thu nhóm chỉ dành cho tài khoản Nhóm trưởng/Giám thị!");
+            if (!UserAuth.hasAccess("leader")) {
+                alert("⛔ Truy cập bị từ chối! Khu vực này chỉ dành cho Ban cán sự nhóm hoặc Giảng viên.");
                 return;
             }
             tabGrpBtn.className = "tab-btn active";
