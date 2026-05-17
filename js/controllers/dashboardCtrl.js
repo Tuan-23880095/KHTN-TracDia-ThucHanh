@@ -9,122 +9,159 @@
  * ==========================================================================
  */
 
+/**
+ * ==========================================================================
+ * FILE: js/controllers/dashboardCtrl.js
+ * MỤC ĐÍCH: Bộ điều khiển trung tâm cho trang Dashboard chính
+ * CHỨC NĂNG:
+ * 1. Nhận diện Role, phân cấp kế thừa (Teacher hiển thị switch, Student chịu ổ khóa).
+ * 2. Gọi API kéo trạng thái OPEN/CLOSED real-time từ Sheet Settings.
+ * 3. Bảo vệ giao diện nghiêm ngặt, chặn click chuột nếu Form bị khóa sổ.
+ * ==========================================================================
+ */
+
 document.addEventListener("DOMContentLoaded", async () => {
     
-    // BƯỚC 1: BẢO VỆ AN NINH TRANG (Page Protection)
-    // Nếu sinh viên cố tình vào thẳng trang này bằng URL mà chưa đăng nhập, hàm sẽ đá văng ra index.html
+    // 1. CHỐT CHẶN AN NINH & TẢI THÔNG TIN HỒ SƠ
     UserAuth.protectPage();
-
-    // BƯỚC 2: TRÍCH XUẤT THÔNG TIN PHIÊN LÀM VIỆC (Extract Session Profile)
     const session = UserAuth.getSession();
-    if (!session || !session.profile) {
-        UserAuth.logout(); // Dự phòng trường hợp token hỏng hoặc dữ liệu session lỗi
-        return;
-    }
-
-    // Phân rã cấu trúc dữ liệu người dùng được trả về từ Google Sheet ở bước đăng nhập
-    const { mssv_id, full_name, role, group_id } = session.profile;
-
-    // BƯỚC 3: ĐỔ DỮ LIỆU ĐỊNH DANH RA GIAO DIỆN (Render Identity Views)
-    const displayFullName = document.getElementById("displayFullName");
-    const displayMssv = document.getElementById("displayMssv");
-    const displayGroupId = document.getElementById("displayGroupId");
-    const userRoleBadge = document.getElementById("userRoleBadge");
-
-    if (displayFullName) displayFullName.textContent = full_name;
-    if (displayMssv) displayMssv.textContent = mssv_id;
-    if (displayGroupId) displayGroupId.textContent = group_id || "Chưa phân nhóm";
-
-    // Cập nhật nhãn và phong cách phẳng (flat class) cho thuộc tính chức danh
-    if (userRoleBadge) {
-        if (role === "teacher") {
-            userRoleBadge.textContent = "Giảng viên";
-            userRoleBadge.classList.add("role-teacher");
-        } else if (role === "leader") {
-            userRoleBadge.textContent = "Nhóm trưởng";
-            userRoleBadge.classList.add("role-leader");
-        } else {
-            userRoleBadge.textContent = "Sinh viên";
-        }
-    }
-
-    // BƯỚC 4: XỬ LÝ PHÂN QUYỀN GIAO DIỆN GIÁO VIÊN (Role-based Teacher Rendering)
-    const teacherPanel = document.getElementById("teacherPanel");
-    if (role === "teacher") {
-        if (teacherPanel) {
-            teacherPanel.classList.remove("hidden"); // Hiển thị dải thống kê real-time của giáo viên
-            // Lưu ý: Tại đây bạn có thể gọi APIConnector.post("GET_TEACHER_STATS", {}) để cập nhật số liệu thực tế
-        }
-    }
-
-    // BƯỚC 5: XỬ LÝ TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI 9 BUỔI THỰC HÀNH (Dynamic Session Matrix)
-    // Thực tế hệ thống sẽ gọi lên Google Sheets để xem sinh viên/nhóm này đã hoàn thành bài nào.
-    // Dưới đây là mảng cấu trúc trạng thái mẫu để Controller duyệt và render phẳng ra giao diện.
-    // Bạn có thể chuyển cấu trúc này thành một lệnh fetch() từ APIConnector nếu cần lấy dữ liệu động từ Google Sheet.
     
-    const mockSessionsProgress = {
-        1: { completed: true, locked: false, statusText: "ĐẠT CHUẨN (QC)" },
-        2: { completed: true, locked: false, statusText: "ĐẠT CHUẨN (QC)" },
-        3: { completed: false, locked: false, statusText: "CHƯA NỘP" },
-        4: { completed: false, locked: false, statusText: "CHƯA NỘP" },
-        5: { completed: false, locked: false, statusText: "CHƯA NỘP" },
-        6: { completed: false, locked: false, statusText: "CHƯA NỘP" },
-        7: { completed: false, locked: true, statusText: "CHƯA MỞ" },
-        8: { completed: false, locked: true, statusText: "CHƯA MỞ" },
-        9: { completed: false, locked: false, statusText: "SẴN SÀNG THI" } // Buổi thi sát hạch luôn sẵn sàng nếu giáo viên kích hoạt
-    };
-
-    // Duyệt qua chu kỳ tuần tự 9 buổi để thực thi thay đổi DOM hình ảnh
-    for (let sessionNum = 1; sessionNum <= 9; sessionNum++) {
-        const cardElement = document.getElementById(`card-session-${sessionNum}`);
-        const statusTextElement = document.getElementById(`status-text-${sessionNum}`);
-        const progress = mockSessionsProgress[sessionNum];
-
-        if (cardElement && progress) {
-            // Nếu là tài khoản Giảng viên, tự động mở khóa (unlocked) toàn bộ các card để giáo viên kiểm tra form
-            if (role === "teacher") {
-                cardElement.classList.remove("state-locked");
-                if (statusTextElement && sessionNum !== 9) {
-                    statusTextElement.textContent = "XEM BIỂU MẪU";
-                }
-                continue; // Bỏ qua các bước kiểm tra khóa/hoàn thành của sinh viên bên dưới
-            }
-
-            // Xử lý trạng thái bị khóa do chưa đến tiến độ (Locked State)
-            if (progress.locked) {
-                cardElement.classList.add("state-locked");
-                if (statusTextElement) {
-                    statusTextElement.textContent = progress.statusText;
-                    statusTextElement.className = "flat-badge text-light"; // Chuyển chữ sang màu xám mờ
-                }
-            } 
-            // Xử lý trạng thái đã hoàn thành bài tập nộp hiện trường và đạt chuẩn QC (Completed State)
-            else if (progress.completed) {
-                cardElement.classList.add("status-completed");
-                if (statusTextElement) {
-                    statusTextElement.textContent = progress.statusText;
-                    statusTextElement.className = "flat-badge badge-success"; // Đổ màu nền xanh phẳng
-                }
-            }
-            // Xử lý bài học đang mở nhưng chưa nộp dữ liệu (Active State)
-            else {
-                if (statusTextElement && sessionNum !== 9) {
-                    statusTextElement.textContent = progress.statusText;
-                    statusTextElement.className = "flat-badge text-primary font-bold"; // Chuyển chữ xanh nổi bật
-                }
-            }
-        }
+    if (session && session.profile) {
+        DOMUtils.setText("userDisplayProfile", `${session.profile.full_name} (${session.profile.mssv_id})`);
+        DOMUtils.setText("userDisplayGroup", session.profile.group_id || "Chưa phân nhóm");
     }
 
-    // BƯỚC 6: RÀNG BUỘC SỰ KIỆN ĐĂNG XUẤT (Logout Event Binding)
-    const btnLogout = document.getElementById("btnLogout");
-    if (btnLogout) {
-        btnLogout.addEventListener("click", (e) => {
-            e.preventDefault();
-            const confirmLogout = confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản lý trắc địa?");
-            if (confirmLogout) {
-                UserAuth.logout(); // Hủy token trong localStorage và chuyển hướng
-            }
+    // Định nghĩa cấu trúc dữ liệu tĩnh cho tên và mô tả của 9 buổi học trắc địa
+    const sessionsMetadata = [
+        { id: "session_1", title: "Buổi 1: Giới thiệu máy Kinh vĩ & Thủy bình", desc: "Thao tác đọc số trên mia 3 lần độc lập và đo khoảng cách lượng cự ngắm ngang." },
+        { id: "session_2", title: "Buổi 2: Thao tác định tâm & Cân bằng máy", desc: "Rèn luyện trí nhớ cơ bắp thao tác cân máy dưới áp lực thời gian và hạn mức sai số tâm e <= 2mm." },
+        { id: "session_3", title: "Buổi 3: Phương pháp đo Góc bằng", desc: "Tiến hành đo góc bằng qua 3 vòng đo cụm kính, tính sai số 2C và trị số hướng trung bình." },
+        { id: "session_4", title: "Buổi 4: Đo Góc đứng & Cao lượng giác", desc: "Khảo sát bàn độ đứng, tính sai số chỉ tiêu MO, góc đứng V và chênh cao lượng giác h." },
+        { id: "session_5", title: "Buổi 5: Đo dài bằng chỉ lượng cự lượng giác", desc: "Vận dụng phương sai lượng cự kép kết hợp góc đứng để tính cự ly phẳng bản đồ." },
+        { id: "session_6", title: "Buổi 6: Đo cao hình học & Kiểm định góc i", desc: "Thực hiện bài kiểm định máy thủy bình kinh điển (phương pháp đo từ giữa và đo lệch tâm)." },
+        { id: "session_7", title: "Buổi 7: Dẫn chuyền cao độ kỹ thuật tuyến kín", desc: "Phát triển mạng lưới đường chuyền độ cao ngoại nghiệp khép khít mốc hành chính." },
+        { id: "session_8", title: "Buổi 8: Tính toán nội nghiệp Bình sai lưới", desc: "Xử lý sai số khép fh, phân bổ số hiệu chỉnh vi vào sổ đo hoàn công cao độ." },
+        { id: "session_9", title: "Buổi 9: Sát hạch kỹ năng thực hành tổng hợp", desc: "Kỳ thi cuối kỳ tập trung: Giám thị phát đề ngẫu nhiên, hệ thống đếm ngược 60 phút tự động khóa bài." }
+    ];
+
+    // 2. KÉO DỮ LIỆU ĐÓNG/MỞ FORM TỪ SHEET SETTINGS QUA TẦNG API
+    let sessionsSettings = {};
+    try {
+        // Gọi lệnh POST ngầm hỏi trạng thái hệ thống
+        const response = await APIConnector.post("GET_SETTINGS", {});
+        if (response && response.status === "success") {
+            // Biến đổi mảng trả về thành Object cấu trúc dạng { session_1: "OPEN", session_2: "CLOSED" }
+            response.settings.forEach(item => {
+                sessionsSettings[item.session_id] = item.status.toUpperCase().trim();
+            });
+        } else {
+            console.warn("Không kéo được Settings từ Sheet, áp dụng chế độ OPEN khẩn cấp.");
+            sessionsMetadata.forEach(s => sessionsSettings[s.id] = "OPEN");
+        }
+    } catch (err) {
+        console.error("Lỗi cổng API kết nối mạng: ", err);
+        sessionsMetadata.forEach(s => sessionsSettings[s.id] = "OPEN"); // Dự phòng rớt mạng
+    }
+
+    // 3. THỰC THI PHÂN QUYỀN HIERARCHICAL VÀ RENDER VIEW INTERFACE
+
+    // CHỨC NĂNG A: Dành riêng cho tài khoản GIẢNG VIÊN (role === "teacher")
+    if (UserAuth.hasAccess("teacher")) {
+        // Hiện bảng điều khiển đặc quyền
+        DOMUtils.toggleVisibility("teacherSettingsPanel", true);
+        const switchMatrix = document.getElementById("switchMatrixContainer");
+        switchMatrix.innerHTML = ""; // Clear dữ liệu rác
+
+        // Vòng lặp vẽ 9 cái công tắc Toggle Switch
+        sessionsMetadata.forEach(s => {
+            const isChecked = sessionsSettings[s.id] === "OPEN" ? "checked" : "";
+            
+            const switchCard = document.createElement("div");
+            switchCard.className = "switch-item";
+            switchCard.innerHTML = `
+                <span>${s.title.split(":")[0]}</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="switch_${s.id}" ${isChecked}>
+                    <span class="slider"></span>
+                </label>
+            `;
+            switchMatrix.appendChild(switchCard);
+
+            // Gắn sự kiện lắng nghe gạt công tắc (Real-time update lên Google Sheets)
+            document.getElementById(`switch_${s.id}`).addEventListener("change", async function() {
+                const newStatus = this.checked ? "OPEN" : "CLOSED";
+                this.disabled = true; // Khóa tạm thời tránh nhấn liên tục (debounce)
+                
+                const updateRes = await APIConnector.post("UPDATE_SETTING", {
+                    session_id: s.id,
+                    status: newStatus
+                });
+
+                if (updateRes && updateRes.status === "success") {
+                    console.log(`[GAS Server] Cập nhật thành công ${s.id} sang trạng thái: ${newStatus}`);
+                    // Thầy chỉnh xong thì giao diện hiển thị Grid bên dưới của thầy tự đồng bộ luôn
+                    const targetCard = document.getElementById(`card_${s.id}`);
+                    const targetBadge = document.getElementById(`badge_${s.id}`);
+                    const targetBtn = document.getElementById(`btn_${s.id}`);
+                    
+                    if (newStatus === "OPEN") {
+                        targetBadge.className = "status-badge status-open";
+                        targetBadge.innerText = "ĐANG MỞ FORM";
+                        targetBtn.innerText = "VÀO BIỂU MẪU ĐO ➜";
+                    } else {
+                        targetBadge.className = "status-badge status-closed";
+                        targetBadge.innerText = "ĐÃ KHÓA SỔ";
+                        targetBtn.innerText = "XEM LẠI SỐ LIỆU 👁";
+                    }
+                } else {
+                    alert("⛔ Lỗi hệ thống: Không thể ghi nhận trạng thái lên Google Sheets. Vui lòng kiểm tra lại kết nối!");
+                    this.checked = !this.checked; // Trả lại trạng thái switch cũ trên UI
+                }
+                this.disabled = false;
+            });
         });
     }
+
+    // CHỨC NĂNG B: RENDER LƯỚI 9 CARD BÀI THỰC HÀNH CHUNG (Hỗ trợ bẫy khóa an ninh cho SV)
+    const gridContainer = document.getElementById("sessionGridContainer");
+    gridContainer.innerHTML = "";
+
+    sessionsMetadata.forEach(s => {
+        const currentStatus = sessionsSettings[s.id] || "CLOSED";
+        const isClosed = currentStatus === "CLOSED";
+        const isTeacher = UserAuth.hasAccess("teacher");
+
+        const card = document.createElement("div");
+        card.className = "session-card";
+        card.id = `card_${s.id}`;
+
+        // NÂNG CẤP BẢO MẬT: Nếu form ĐÓNG và người truy cập LÀ SINH VIÊN/NHÓM TRƯỞNG -> Kích hoạt Grayscale và khóa click
+        if (isClosed && !isTeacher) {
+            card.classList.add("state-locked");
+        }
+
+        // Định hình văn bản nút bấm và nhãn trạng thái tương ứng
+        let badgeClass = isClosed ? "status-closed" : "status-open";
+        let badgeText = isClosed ? "ĐÃ KHÓA SỔ" : "ĐANG MỞ FORM";
+        
+        // Thiết lập nút bấm thông minh
+        let btnText = "VÀO BIỂU MẪU ĐO ➜";
+        if (isClosed) {
+            btnText = isTeacher ? "XEM LẠI SỐ LIỆU 👁" : "🔒 GIẢNG VIÊN CHƯA MỞ FORM";
+        }
+
+        card.innerHTML = `
+            <div>
+                <div class="session-title">${s.title}</div>
+                <div class="session-desc">${s.desc}</div>
+            </div>
+            <div class="session-action">
+                <span class="status-badge ${badgeClass}" id="badge_${s.id}">${badgeText}</span>
+                <a href="session-${s.id.split("_")[1]}.html" class="btn btn-primary btn-enter" id="btn_${s.id}" style="text-decoration:none; font-size:9.5pt; padding:6px 12px;">
+                    ${btnText}
+                </a>
+            </div>
+        `;
+        gridContainer.appendChild(card);
+    });
 });
