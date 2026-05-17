@@ -32,14 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Nếu trạng thái là CLOSED và người truy cập KHÔNG PHẢI GIẢNG VIÊN -> Trục xuất lập tức
             if (status === "CLOSED" && !isTeacher) {
                 alert("🔒 BẢO MẬT HỆ THỐNG: Biểu mẫu Buổi 1 hiện đang bị khóa sổ. Bạn không được quyền truy cập trực tiếp!");
-                window.location.replace("../dashboard.html");
+                window.location.replace("./dashboard.html");
                 return; // Dừng toàn bộ tiến trình tải UI bên dưới
             }
         } else {
             // Khớp nguyên tắc Fail-Closed khi API lỗi dữ liệu
             if (!UserAuth.hasAccess("teacher")) {
                 alert("⚠️ Hệ thống đang cấu hình khẩn cấp. Vui lòng quay lại sau!");
-                window.location.replace("../dashboard.html");
+                window.location.replace("./dashboard.html");
                 return;
             }
         }
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Khớp nguyên tắc Fail-Closed khi mất kết nối mạng toàn cục
         if (!UserAuth.hasAccess("teacher")) {
             alert("⚠️ Không có kết nối mạng để xác thực trạng thái biểu mẫu. Hệ thống tự động đóng băng!");
-            window.location.replace("../dashboard.html");
+            window.location.replace("./dashboard.html");
             return;
         }
     }
@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         formGrp.addEventListener("submit", async (e) => {
             e.preventDefault();
 
-            if (!UserAuth.hasAccess("leader")) {
+            if (!UserAuth.hasAccess("leader")) && !UserAuth.hasAccess("teacher")) {
                 alert("⛔ Bạn không có đặc quyền nộp biểu mẫu này!");
                 return;
             }
