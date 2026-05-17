@@ -5,7 +5,7 @@
 class APIConnector {
     // URL Web App nhận được sau khi tiến hành Deploy mã nguồn Code.gs bên phía Apps Script
     // Hãy thay thế chuỗi này bằng URL thực tế của bạn
-    static GAS_URL = "https://script.google.com/macros/s/AKfycbx9EihNhBD4HmCil8_667bhjNCtsGxy44MrNUx9I3lCvsk6m4orgNbpLQTVw5t-i6p83w/exec";
+    static GAS_URL = "https://script.google.com/macros/s/AKfycbzOklUavB1YvlSh_p4eS1wFudz8FpXUEDexZ6xCu1ZUmfSZb8sQ8cB5sLZwlhbwes3j/exec";
 
     /**
      * Gửi một POST Request dạng JSON tới Google Apps Script
