@@ -32,14 +32,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Nếu trạng thái là CLOSED và người truy cập KHÔNG PHẢI GIẢNG VIÊN -> Trục xuất lập tức
             if (status === "CLOSED" && !isTeacher) {
                 alert("🔒 BẢO MẬT HỆ THỐNG: Biểu mẫu Buổi 1 hiện đang bị khóa sổ. Bạn không được quyền truy cập trực tiếp!");
-                window.location.replace(".../dashboard.html");
+                window.location.replace("../dashboard.html");
                 return; // Dừng toàn bộ tiến trình tải UI bên dưới
             }
         } else {
             // Khớp nguyên tắc Fail-Closed khi API lỗi dữ liệu
             if (!UserAuth.hasAccess("teacher")) {
                 alert("⚠️ Hệ thống đang cấu hình khẩn cấp. Vui lòng quay lại sau!");
-                window.location.replace(".../dashboard.html");
+                window.location.replace("../dashboard.html");
                 return;
             }
         }
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Khớp nguyên tắc Fail-Closed khi mất kết nối mạng toàn cục
         if (!UserAuth.hasAccess("teacher")) {
             alert("⚠️ Không có kết nối mạng để xác thực trạng thái biểu mẫu. Hệ thống tự động đóng băng!");
-            window.location.replace(".../dashboard.html");
+            window.location.replace("../dashboard.html");
             return;
         }
     }
@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const response = await APIConnector.post("SAVE_DATA", payload);
                 if (response && response.status === "success") {
                     alert("🎉 Chúc mừng! Kết quả thực tập cá nhân Buổi 1 đã ghi nhận thành công vào Google Sheets.");
-                    window.location.href = ".../dashboard.html";
+                    window.location.href = "../dashboard.html";
                 } else {
                     alert(`⛔ Lỗi máy chủ từ chối: ${response.message}`);
                     btn.innerHTML = "NỘP BÁO CÁO CÁ NHÂN";
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const response = await APIConnector.post("SAVE_DATA", payload);
                 if (response && response.status === "success") {
                     alert("🎉 Sổ đo ngoại nghiệp tập thể Nhóm đã được nộp và lưu trữ thành công!");
-                    window.location.href = ".../dashboard.html";
+                    window.location.href = "../dashboard.html";
                 } else {
                     alert(`⛔ Lỗi: ${response.message}`);
                     btn.innerHTML = "NỘP BÁO CÁO NHÓM ➜";
