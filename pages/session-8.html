@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buổi 8: Bình Sai Lưới Đường Chuyền Cao Độ | HCMUS</title>
+    
+    <!-- Thư viện MathJax xử lý hiển thị công thức bình sai (v_i, f_h, H_i) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/dist/solid.js"></script>
+    
+    <!-- Liên kết hệ thống CSS phẳng -->
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+    
+    <style>
+        .session-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            margin-bottom: 25px;
+        }
+        .nav-back {
+            display: inline-flex;
+            align-items: center;
+            font-size: 10.5pt;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .tab-btn.active {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            border-color: var(--primary-blue);
+        }
+        .preview-img {
+            max-width: 200px;
+            height: auto;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            display: block;
+        }
+        .highlight-box {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .formula-box {
+            background-color: #fffde7;
+            border-left: 4px solid #fbc02d;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- THANH ĐIỀU HƯỚNG VÀ TIÊU ĐỀ -->
+    <div class="session-header">
+        <div class="layout-form-container" style="padding-top:0; padding-bottom:0;">
+            <a href="../dashboard.html" class="nav-back">⬅ Quay lại Bảng điều khiển</a>
+            <h1 style="font-size: 16pt; margin: 0;">BUỔI 8: BÌNH SAI LƯỚI ĐƯỜNG CHUYỀN CAO ĐỘ (NỘI NGHIỆP)</h1>
+            <p class="text-muted" style="margin:0; font-size:10pt;">Học phần: Trắc địa đại cương (GEO10055) — Khoa Địa chất, Trường Đại học Khoa học Tự nhiên</p>
+        </div>
+    </div>
+
+    <div class="layout-form-container">
+        
+        <!-- THÔNG TIN TÀI KHOẢN -->
+        <div class="flat-card" style="padding: 15px; margin-bottom: 20px; background-color: var(--primary-light); border-color: #bee5eb;">
+            <p style="margin: 0; font-size: 10.5pt;">
+                👤 Tài khoản: <strong id="userDisplayProfile">Đang tải hồ sơ...</strong> 
+                | Nhóm: <strong id="userDisplayGroup">...</strong>
+            </p>
+        </div>
+
+        <!-- HỆ THỐNG TAB -->
+        <div class="tab-container">
+            <button type="button" id="tabIndividualBtn" class="tab-btn active">PHẦN 1: BÁO CÁO CÁ NHÂN (Tất cả SV bắt buộc)</button>
+            <button type="button" id="tabGroupBtn" class="tab-btn">PHẦN 2: BÁO CÁO NỘI NGHIỆP NHÓM (Nhóm trưởng nộp)</button>
+        </div>
+
+        <!-- HỘP THÔNG BÁO QC -->
+        <div id="validationAlert" class="alert-box alert-danger hidden"></div>
+
+        <!-- ========================================== -->
+        <!-- LUỒNG FORM CÁ NHÂN: KIỂM TRA KỸ NĂNG TÍNH TOÁN -->
+        <!-- ========================================== -->
+        <form id="individualForm" class="space-y-4">
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>I. SỐ LIỆU TÍNH TOÁN BÌNH SAI CÁ NHÂN (1 ĐOẠN TUYẾN)</h3>
+                    <p class="text-muted" style="font-size: 9.5pt; margin: 0;">Mỗi cá nhân tự chịu trách nhiệm tính toán phân bổ số hiệu chỉnh ($v_i$) cho một đoạn tuyến do mình đảm nhiệm. Hệ thống sẽ kiểm tra xem bạn có nắm vững công thức tỷ lệ thuận với chiều dài đoạn đo hay không.</p>
+                </div>
+                
+                <div class="formula-box">
+                    <strong>Công thức áp dụng:</strong><br>
+                    $v_i = -f_h \times \frac{D_i}{\sum D}$ (phân bổ theo chiều dài)
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="indSegmentName">Đoạn tuyến đảm nhiệm:<span class="required">*</span></label>
+                    <input type="text" id="indSegmentName" class="form-input" placeholder="Ví dụ: Đoạn Trạm 1 -> Trạm 2" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label" for="indFh">Sai số khép toàn tuyến $f_h$ ($mm$):<span class="required">*</span></label>
+                        <input type="number" id="indFh" class="form-input" placeholder="Ví dụ: +12" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="indSumD">Tổng chiều dài tuyến $\sum D$ ($m$):<span class="required">*</span></label>
+                        <input type="number" step="0.1" id="indSumD" class="form-input" placeholder="Ví dụ: 350.5" required>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="flat-table" style="font-size: 10pt;">
+                        <thead>
+                            <tr>
+                                <th>Chiều dài đoạn $D_i$ ($m$)</th>
+                                <th>Chênh cao thực đo $h_i$ ($mm$)</th>
+                                <th>Số hiệu chỉnh $v_i$ ($mm$)</th>
+                                <th>Chênh cao bình sai $h_i^{bs}$ ($mm$)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="number" step="0.1" id="ind_Di" class="form-input text-center" placeholder="Nhập mét" required></td>
+                                <td><input type="number" id="ind_hi" class="form-input text-center" placeholder="Nhập mm" required></td>
+                                <td id="ind_vi_display" class="font-bold text-danger">0.0 mm</td>
+                                <td id="ind_hi_bs_display" class="font-bold text-primary">0.0 mm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- MINH CHỨNG CÁ NHÂN -->
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>II. HỒ SƠ MINH CHỨNG NỘI NGHIỆP</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh Selfie cá nhân đang tính toán trên giấy nháp:<span class="required">*</span></label>
+                    <input type="file" id="indSelfieFile" class="form-input" accept="image/*" required>
+                    <img id="indSelfiePreview" class="preview-img hidden" alt="Preview Selfie">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh chụp cận cảnh phần giấy nháp tính tay của công thức $v_i$:<span class="required">*</span></label>
+                    <input type="file" id="indInstFile" class="form-input" accept="image/*" required>
+                    <img id="indInstPreview" class="preview-img hidden" alt="Preview Calculation">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="indComment">Nhận xét cá nhân về quá trình làm tròn số:</label>
+                    <textarea id="indComment" class="form-textarea" rows="3" placeholder="Do số hiệu chỉnh v_i tính ra bị lẻ, em đã làm tròn đến mm theo nguyên tắc chuẩn kỹ thuật..."></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmitIndividual" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                    NỘP KẾT QUẢ TÍNH TOÁN CÁ NHÂN
+                </button>
+            </div>
+        </form>
+
+        <!-- ========================================== -->
+        <!-- LUỒNG FORM NHÓM: BÌNH SAI TOÀN TUYẾN KÍN -->
+        <!-- ========================================== -->
+        <form id="groupForm" class="space-y-4 hidden">
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>I. BẢNG TỔNG HỢP KIỂM TRA CAO ĐỘ HOÀN CÔNG (NỘI NGHIỆP NHÓM)</h3>
+                    <p class="text-muted" style="font-size: 9.5pt; margin: 0;">Nhóm trưởng nhập các thông số chốt chặn của bảng bình sai để hệ thống tự động kiểm tra điều kiện khép. Đảm bảo tổng số hiệu chỉnh phải triệt tiêu hoàn toàn sai số khép $\sum v_i = -f_h$.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpBenchmarkElev">Cao độ mốc gốc giả định $H_{gốc}$ (mét):<span class="required">*</span></label>
+                    <input type="number" step="0.001" id="grpBenchmarkElev" class="form-input" placeholder="Ví dụ: 10.000" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div class="form-group">
+                        <label class="form-label" for="grpSumFh">Sai số khép toàn tuyến $f_h$ ($mm$):<span class="required">*</span></label>
+                        <input type="number" id="grpSumFh" class="form-input" placeholder="Ví dụ: +12" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="grpSumVi">Tổng số hiệu chỉnh đã phân bổ $\sum v_i$ ($mm$):<span class="required">*</span></label>
+                        <input type="number" id="grpSumVi" class="form-input" placeholder="Ví dụ: -12" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpFinalElev">Cao độ điểm cuối sau khi cộng dồn (khép về gốc) $H_{cuối}$ (mét):<span class="required">*</span></label>
+                    <input type="number" step="0.001" id="grpFinalElev" class="form-input" placeholder="Ví dụ: 10.000" required>
+                </div>
+
+                <!-- BẢNG ĐIỀU KHIỂN TỰ ĐỘNG KIỂM TRA BÌNH SAI -->
+                <div class="highlight-box">
+                    <h5 style="margin-bottom: 12px; font-size: 11pt;" class="text-primary">ĐÁNH GIÁ CHẤT LƯỢNG BÌNH SAI (AUTO QC):</h5>
+                    <div style="font-size: 10.5pt; line-height: 1.6;">
+                        <p id="qc_cond1" style="margin-bottom:8px;">1. Điều kiện hiệu chỉnh $\sum v_i = -f_h$: <strong class="text-muted">Đang chờ...</strong></p>
+                        <p id="qc_cond2" style="margin-bottom:8px;">2. Điều kiện khép cao độ $H_{cuối} == H_{gốc}$: <strong class="text-muted">Đang chờ...</strong></p>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color);">
+                        <div id="grp_eval_msg" class="flat-badge text-light" style="font-size: 10pt; padding: 6px 12px;">Chưa đủ dữ liệu đánh giá</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HỒ SƠ MINH CHỨNG VÀ DRIVE SYNC -->
+            <div class="flat-card">
+                <div class="flat-card-header">
+                    <h3>II. HỒ SƠ LƯU TRỮ VÀ PHÂN CÔNG ĐỘI NGŨ</h3>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpPortfolioUrl">Link Folder lưu trữ Bảng Bình Sai chuẩn (Google Drive):<span class="required">*</span></label>
+                    <input type="url" id="grpPortfolioUrl" class="form-input" placeholder="https://drive.google.com/..." required>
+                    <p class="text-muted" style="font-size: 8.5pt; margin-top: 4px;">
+                        BẮT BUỘC: Bản chụp "Bảng tính bình sai cao độ" hoàn chỉnh (có chữ ký nhóm trưởng) phải được lưu vào Folder dùng chung: 
+                        <strong style="color:var(--primary-blue);">1eM0GW-K-zIh_1MlWLAG-pbapILHmN8aI</strong>.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ảnh toàn cảnh tập thể nhóm đang họp nội nghiệp tính toán:<span class="required">*</span></label>
+                    <input type="file" id="grpPhotoFile" class="form-input" accept="image/*" required>
+                    <img id="grpPhotoPreview" class="preview-img hidden" alt="Preview Group">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="grpComment">Nhật ký thảo luận nhóm (Mô tả cách xử lý khi tổng $v_i$ bị dư/thiếu 1mm do làm tròn):</label>
+                    <textarea id="grpComment" class="form-textarea" rows="3" placeholder="Nhóm quyết định cộng bù 1mm vào đoạn tuyến dài nhất để đảm bảo toán học khép kín..."></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmitGroup" class="btn btn-success" style="width: 100%; margin-top: 15px;">
+                    CHỐT SỐ LIỆU BÌNH SAI (NỘP BÁO CÁO NHÓM)
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ĐẤU NỐI SCRIPT -->
+    <!-- ========================================== -->
+    <script src="../js/utils/mathUtils.js"></script>
+    <script src="../js/core/APIConnector.js"></script>
+    <script src="../js/core/UserAuth.js"></script>
+    
+    <!-- Các lớp đối tượng Model -->
+    <script src="../js/models/Measurement.js"></script>
+    <script src="../js/models/Theodolite.js"></script>
+    <script src="../js/models/Level.js"></script>
+    
+    <!-- Bộ điều phối chính -->
+    <script src="../js/controllers/sessionCtrl.js"></script>
+
+</body>
+</html>
