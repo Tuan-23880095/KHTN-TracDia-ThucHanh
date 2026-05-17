@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 2. LOGIC ĐIỀU HƯỚNG CHUYỂN TAB VAI TRÒ (Cá nhân / Nhóm)
     const tabIndBtn = document.getElementById("tabIndividualBtn");
     const tabGrpBtn = document.getElementById("tabGroupBtn");
-    const sectionInd = document.getElementById("sectionIndividual");
-    const sectionGrp = document.getElementById("sectionGroup");
+    const sectionInd = document.getElementById("individualForm");
+    const sectionGrp = document.getElementById("groupForm");
 
     if (tabIndBtn && tabGrpBtn && sectionInd && sectionGrp) {
         tabIndBtn.addEventListener("click", () => {
