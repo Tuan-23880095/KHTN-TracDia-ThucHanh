@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </div>
             <div class="session-action">
                 <span class="status-badge ${badgeClass}" id="badge_${s.id}">${badgeText}</span>
-                <a href="session-${s.id.split("_")[1]}.html" class="btn btn-primary btn-enter" id="btn_${s.id}" style="text-decoration:none; font-size:9.5pt; padding:6px 12px;">
+                <a href="pages/session-${s.id.split("_")[1]}.html" class="btn btn-primary btn-enter" id="btn_${s.id}" style="text-decoration:none; font-size:9.5pt; padding:6px 12px;">
                     ${btnText}
                 </a>
             </div>
