@@ -1,0 +1,149 @@
+/* ==========================================================================
+   FILE: css/main.css
+   MỤC ĐÍCH: CSS nền tảng dùng chung (CSS Reset, Typography, Màu sắc Hệ thống)
+   PHONG CÁCH: Thiết kế phẳng hiện đại (Modern Flat Design), Tối giản, Học thuật
+   PHÁT TRIỂN: Phục vụ học phần Trắc địa đại cương (GEO10055) - HCMUS
+   ========================================================================== */
+
+/* 1. ĐỊNH NGHĨA BIẾN MÀU SẮC & HỆ THỐNG (CSS Custom Properties) */
+:root {
+    /* Màu chủ đạo (Bản sắc ĐHQG-HCM / HCMUS) */
+    --primary-blue: #0056b3;
+    --primary-hover: #004494;
+    --primary-light: #e6f0fa;
+    
+    /* Màu bổ túc / Nhấn mạnh */
+    --accent-cyan: #06b6d4;
+    --accent-cyan-hover: #0891b2;
+    
+    /* Màu trạng thái kiểm tra sai số (QC Validation) */
+    --success-green: #218838;
+    --success-bg: #d4edda;
+    --success-border: #c3e6cb;
+    
+    --danger-red: #c82333;
+    --danger-bg: #f8d7da;
+    --danger-border: #f5c6cb;
+    
+    --warning-orange: #e0a800;
+    --warning-bg: #fff3cd;
+    --warning-border: #ffeeba;
+
+    --info-blue: #17a2b8;
+    --info-bg: #d1ecf1;
+    --info-border: #bee5eb;
+
+    /* Thang màu xám trung tính (Neutral Grays) */
+    --text-dark: #1f2937;       /* Chữ chính (Chao xám đậm) */
+    --text-muted: #4b5563;      /* Chữ phụ / Chú thích */
+    --text-light: #9ca3af;      /* Chữ mờ / Placeholder */
+    
+    --bg-main: #f9fafb;         /* Nền toàn trang */
+    --bg-card: #ffffff;         /* Nền khối chức năng */
+    --bg-stripe: #f3f4f6;       /* Nền dòng xen kẽ trong bảng */
+    
+    --border-color: #e5e7eb;    /* Đường viền mặc định */
+    --border-focus: #3b82f6;    /* Đường viền khi chọn vào ô nhập */
+
+    /* Cấu hình bố cục tĩnh */
+    --max-width-desktop: 1200px;
+    --max-width-form: 800px;
+    --transition-fast: all 0.2s ease-in-out;
+}
+
+/* 2. KHỞI TẠO LẠI TRẠNG THÁI (CSS Reset) */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 100%; /* 16px mặc định */
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 11pt; /* Kích thước chuẩn văn bản A4/In ấn học thuật */
+    line-height: 1.6;
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+    min-height: 100vh;
+    display: block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 3. ĐỊNH DẠNG HỆ THỐNG TIÊU ĐỀ & CHỮ (Typography) */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+h1 { font-size: 22pt; font-weight: 800; color: var(--primary-blue); }
+h2 { font-size: 15pt; border-left: 4px solid var(--primary-blue); padding-left: 10px; margin-top: 1.5rem; }
+h3 { font-size: 12pt; font-weight: 600; }
+h4 { font-size: 11pt; font-weight: 600; text-transform: uppercase; color: var(--text-muted); }
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+/* 4. TIỆN ÍCH DÀN TRANG (Utility Layout Classes) */
+.layout-container {
+    width: 100%;
+    max-width: var(--max-width-desktop);
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+.layout-form-container {
+    width: 100%;
+    max-width: var(--max-width-form);
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+/* Tiện ích căn chỉnh & Ẩn hiện phẳng */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 500; }
+.italic { font-style: italic; }
+
+.hidden { display: none !important; }
+
+/* Tiện ích màu sắc phẳng bổ trợ */
+.text-primary { color: var(--primary-blue); }
+.text-success { color: var(--success-green); }
+.text-danger { color: var(--danger-red); }
+.text-muted { color: var(--text-muted); }
+
+.bg-white { background-color: #ffffff; }
+.bg-gray-light { background-color: var(--bg-stripe); }
+
+/* Khung dải phân cách học thuật mảnh */
+.divider {
+    border: 0;
+    height: 1px;
+    background: var(--border-color);
+    margin: 1.5rem 0;
+}
