@@ -63,6 +63,17 @@ class UserAuth {
             return null;
         }
     }
+    static async forgotPassword(mssv) {
+        if (!mssv) return { success: false, message: "Vui lòng nhập MSSV!" };
+        
+        // Gọi APIConnector với action mới
+        const result = await APIConnector.post("FORGOT_PASSWORD", { mssv: mssv });
+        
+        if (result && result.status === "success") {
+            return { success: true, message: result.message };
+        }
+        return { success: false, message: result?.message || "Lỗi kết nối máy chủ!" };
+    }
 
     /**
      * Hàm chặn rò rỉ an ninh nội bộ. Đặt ở đầu các file dashboard.html hoặc các bài thực hành
