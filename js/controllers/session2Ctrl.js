@@ -18,6 +18,42 @@ document.addEventListener("DOMContentLoaded", () => {
         DOMUtils.setText("userDisplayProfile", `${session.profile.full_name} (${session.profile.mssv_id})`);
         DOMUtils.setText("userDisplayGroup", session.profile.group_id || "Chưa phân nhóm");
     }
+    // =====================================================================
+    // 1.5. CHỐT CHẶN AN NINH SERVER-SIDE (CHỐNG BYPASS UI BẰNG DEVTOOLS)
+    // =====================================================================
+    try {
+        const response = await APIConnector.post("GET_SETTINGS", {});
+        if (response && response.status === "success") {
+            // Lấy trạng thái riêng của "session_1" (Nhớ sửa thành session_2, 3... tương ứng với file)
+            const sessionSetting = response.settings.find(s => s.session_id === "session_1");
+            const status = sessionSetting ? sessionSetting.status.toUpperCase().trim() : "CLOSED";
+            
+            const isTeacher = UserAuth.hasAccess("teacher");
+
+            // Nếu trạng thái là ĐÓNG và truy cập LÀ SINH VIÊN -> Kick ra ngoài ngay lập tức
+            if (status === "CLOSED" && !isTeacher) {
+                alert("🔒 BẢO MẬT HỆ THỐNG: Buổi thực hành này đang bị khóa. Bạn không được phép truy cập bằng đường link trực tiếp!");
+                window.location.replace("../dashboard.html"); // Điều hướng không lưu vào History trình duyệt
+                return; // ⛔ QUAN TRỌNG: Lệnh return này sẽ dừng toàn bộ việc render UI phía dưới
+            }
+        } else {
+            // Nguyên tắc Fail-Closed: Không kéo được Settings -> Khóa chặn trừ giảng viên
+            if (!UserAuth.hasAccess("teacher")) {
+                alert("⚠️ Lỗi dữ liệu hệ thống. Kích hoạt chế độ đóng băng khẩn cấp!");
+                window.location.replace("../dashboard.html");
+                return;
+            }
+        }
+    } catch (err) {
+        console.error("Lỗi kiểm tra bảo mật (Chống Bypass): ", err);
+        // Lỗi rớt mạng -> Fail-Closed
+        if (!UserAuth.hasAccess("teacher")) {
+            alert("⚠️ Không có kết nối internet để xác thực quyền. Hệ thống tự động khóa bảo vệ!");
+            window.location.replace("../dashboard.html");
+            return;
+        }
+    }
+    // =====================================================================
 
     // Thiết lập tính năng xem trước ảnh minh chứng thực địa
     DOMUtils.setupImagePreview("indSelfieFile", "indSelfiePreview");
