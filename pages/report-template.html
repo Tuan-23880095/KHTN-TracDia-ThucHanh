@@ -15,12 +15,24 @@
     <link rel="stylesheet" href="../css/a4-print.css" media="print">
     
     <style>
-        /* Phong cách hiển thị trên Viewport màn hình Máy tính (Dành cho Giảng viên duyệt hồ sơ) */
-        body {
-            background-color: var(--bg-main, #f8fafc);
-            padding: 30px 0;
-            margin: 0;
+        /* ĐỒNG BỘ ĐỊNH NGHĨA BIẾN MÀU SẮC TỪ PHÔI MẪU XEM ĐIỂM INDEX.HTML */
+        :root { 
+            --blue: #0056b3; 
+            --red: #b30000; 
+            --green: #218838;
+            --dark-text: #111111;
+            --border-gray: #000000; /* Ép viền đen mảnh để in ấn rõ nét */
         }
+
+        body { 
+            /* Ép cứng font chữ hành chính cổ điển */
+            font-family: 'Times New Roman', Times, serif; 
+            background: #f4f5f7; 
+            padding: 20px; 
+            margin: 0; 
+        }
+
+        /* Khung điều phối thanh tương tác phía trên */
         .print-control-panel {
             width: 210mm;
             margin: 0 auto 15px auto;
@@ -29,73 +41,142 @@
             align-items: center;
             background-color: #ffffff;
             padding: 12px 20px;
-            border: 1px solid var(--border-color, #e2e8f0);
+            border: 1px solid #cbd5e1;
             border-radius: 6px;
         }
+
+        /* KHUÔN CANVAS MÔ PHỎNG GIẤY A4 CHUẨN VĂN PHÒNG KHOA ĐỊA CHẤT */
         .print-preview-container {
             background-color: #ffffff;
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
             padding: 20mm 15mm;
-            border: 1px solid var(--border-color, #e2e8f0);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             position: relative;
-            font-family: "Arial", sans-serif;
+            color: var(--dark-text);
         }
+
+        /* Cấu trúc tiêu đề hành chính 2 bên */
         .academic-header {
             display: flex;
             justify-content: space-between;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 8px;
-            margin-bottom: 25px;
+            border-bottom: 1px solid #000000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
         .institution-title {
-            font-size: 10.5pt;
+            font-size: 11pt;
             font-weight: bold;
             line-height: 1.4;
             text-transform: uppercase;
         }
+        .form-code-meta {
+            text-align: right; 
+            font-size: 10pt; 
+            font-style: italic; 
+            line-height: 1.4;
+        }
+
+        /* TIÊU ĐỀ TRUNG TÂM PHIẾU HOÀN CÔNG */
         .report-main-title {
             text-align: center;
-            margin: 25px 0;
+            margin: 20px 0 30px 0;
         }
         .report-main-title h2 {
-            font-size: 17pt;
-            font-weight: 800;
-            color: #1e3a8a;
+            font-size: 16pt;
+            font-weight: bold;
+            color: var(--blue);
             margin: 0 0 5px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .meta-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 30px;
-            font-size: 11pt;
-        }
-        .meta-item strong {
-            color: #475569;
-        }
-        .section-title-a4 {
-            font-size: 11.5pt;
+        .report-main-title h3 {
+            font-size: 12pt;
             font-weight: bold;
-            color: #ffffff;
-            background-color: #1e3a8a;
-            padding: 6px 12px;
+            color: var(--dark-text);
+            margin: 5px 0 0 0;
+            text-transform: uppercase;
+        }
+
+        /* KHỐI TIÊU ĐỀ SECTION PHẲNG (Adopting the minimal layout strategy) */
+        .section-title-a4 {
+            font-size: 12pt;
+            font-weight: bold;
+            color: var(--blue);
+            border-left: 4px solid var(--blue);
+            padding-left: 10px;
             margin-top: 25px;
             margin-bottom: 15px;
             text-transform: uppercase;
         }
-        .signature-zone {
+
+        /* LƯỚI THÔNG TIN SINH VIÊN */
+        .meta-info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            text-align: center;
-            margin-top: 40px;
+            gap: 10px;
+            margin-bottom: 25px;
             font-size: 11pt;
-            page-break-inside: avoid;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            background-color: #fafafa;
+            border-radius: 4px;
         }
+        .meta-item strong {
+            color: #333333;
+        }
+        .meta-item span {
+            font-weight: bold;
+        }
+
+        /* ĐỒNG BỘ KIỂU BẢNG BIỂU CỦA TRANG XEM ĐIỂM (Premium Transcript Grid) */
+        .flat-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-top: 10px !important;
+            font-size: 11pt !important;
+        }
+        .flat-table th, .flat-table td {
+            border: 1px solid var(--border-gray) !important;
+            padding: 8px 6px !important;
+            text-align: center !important;
+        }
+        .flat-table th {
+            background-color: #f8f9fa !important;
+            font-weight: bold !important;
+            color: #000000 !important;
+        }
+        .flat-table td strong {
+            color: var(--red); /* Đồng bộ việc nổi bật điểm số, sai số lỗi bằng màu đỏ */
+        }
+        .col-highlight {
+            background-color: #f9fafb !important;
+            font-weight: bold !important;
+        }
+
+        /* ĐỊNH DẠNG HUY HIỆU ĐẠT CHUẨN QUALITY CONTROL */
+        .flat-badge {
+            font-size: 10pt !important;
+            font-weight: bold !important;
+            padding: 4px 12px !important;
+            border-radius: 3px !important;
+            text-transform: uppercase !important;
+            display: inline-block;
+        }
+        .badge-success {
+            background-color: #ecfdf5 !important;
+            color: var(--green) !important;
+            border: 1px solid var(--green) !important;
+        }
+        .badge-danger {
+            background-color: #fef2f2 !important;
+            color: var(--red) !important;
+            border: 1px solid var(--red) !important;
+        }
+
+        /* KHU VỰC CHỨNG THỰC HÌNH ẢNH TRANG 2 */
         .img-evidence-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -104,21 +185,42 @@
         }
         .img-evidence-card {
             border: 1px solid #cbd5e1;
-            padding: 8px;
+            padding: 6px;
             text-align: center;
-            background-color: #fafafa;
+            background-color: #ffffff;
         }
         .img-evidence-card img {
             width: 100%;
-            height: 150mm;
+            height: 140mm; /* Khống chế để ép chặt hình ảnh vừa khít trang 2 hành chính */
             object-fit: cover;
-            border-radius: 2px;
         }
         .evidence-caption {
-            font-size: 9.5pt;
+            font-size: 10pt;
             margin-top: 6px;
             font-style: italic;
-            color: #475569;
+            color: #333333;
+        }
+
+        /* KHU VỰC PHÂN BAN KÝ TÊN VĂN BẢN */
+        .signature-zone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            text-align: center;
+            margin-top: 35px;
+            font-size: 11pt;
+            page-break-inside: avoid;
+        }
+
+        /* CẤU HÌNH ẨN PANEL ĐIỀU KHIỂN KHI LÊN PHIẾU IN THỰC TẾ */
+        @media print {
+            body { padding: 0; background: #ffffff; }
+            .print-control-panel { display: none !important; }
+            .print-preview-container { 
+                width: 100% !important; 
+                border: none !important; 
+                box-shadow: none !important; 
+                padding: 0 !important;
+            }
         }
     </style>
 </head>
@@ -126,10 +228,10 @@
 
     <div class="print-control-panel">
         <div>
-            <a href="../dashboard.html" class="btn btn-secondary" style="text-decoration: none; padding: 6px 12px; font-size: 10pt;">⬅ Quay lại Bảng điều khiển</a>
+            <a href="dashboard.html" class="btn btn-secondary" style="text-decoration: none; padding: 6px 12px; font-size: 10pt; font-family: Arial, sans-serif;">⬅ Trở lại Bảng điều khiển</a>
         </div>
         <div>
-            <button id="btnExportPDF" class="btn btn-primary" style="padding: 6px 18px; font-size: 10pt; font-weight: bold;">
+            <button id="btnExportPDF" class="btn btn-primary" style="padding: 6px 18px; font-size: 10pt; font-weight: bold; font-family: Arial, sans-serif;">
                 🖨 KẾT XUẤT BIỂU MẪU PDF (A4)
             </button>
         </div>
@@ -144,7 +246,7 @@
                     Trường Đại học Khoa học Tự nhiên<br>
                     <strong>Khoa Địa chất</strong>
                 </div>
-                <div style="text-align: right; font-size: 9.5pt; font-style: italic; color: #64748b;">
+                <div class="form-code-meta">
                     Mẫu phiếu: ĐG1.4/GEO10055<br>
                     Học phần: Trắc địa đại cương
                 </div>
@@ -152,68 +254,68 @@
 
             <div class="report-main-title">
                 <h2>PHIẾU KẾT QUẢ THỰC TẬP TRẮC ĐỊA</h2>
-                <h3 id="rptSessionName" style="font-size: 12.5pt; font-weight: 600; color: #475569; margin: 5px 0 0 0;">BUỔI X: LOADING...</h3>
+                <h3 id="rptSessionName">BUỔI X: ĐANG NẠP DỮ LIỆU...</h3>
             </div>
 
-            <div class="section-title-a4">I. Thông tin chủ thể</div>
+            <div class="section-title-a4">I. Thông tin sinh viên & Thiết bị</div>
             <div class="meta-info-grid">
                 <div class="meta-item">👤 <strong>Họ tên sinh viên:</strong> <span id="rptStudentName">---</span></div>
-                <div class="meta-item">🆔 <strong>Mã số sinh viên:</strong> <span id="rptStudentId">---</span></div>
+                <div class="meta-item">🆔 <strong>Mã số sinh viên:</strong> <span id="rptStudentId" style="color: var(--blue);">---</span></div>
                 <div class="meta-item">👥 <strong>Mã nhóm thực địa:</strong> <span id="rptGroupId">---</span></div>
                 <div class="meta-item">📅 <strong>Thời gian đồng bộ:</strong> <span id="rptDateTime">---</span></div>
                 <div class="meta-item">🛠️ <strong>Thiết bị sử dụng:</strong> <span id="rptMachineType">---</span></div>
                 <div class="meta-item">🎯 <strong>Mốc khống chế ngắm:</strong> <span id="rptTargetName">---</span></div>
             </div>
 
-            <div class="section-title-a4">II. Kết quả đo đạc ngoại nghiệp & Bình sai</div>
-            <div id="rptDynamicTableContainer">
-                <p class="text-muted animate-pulse">Hệ thống đang trích xuất tệp dữ liệu hoàn công...</p>
+            <div class="section-title-a4">II. Kết quả đo đạc ngoại nghiệp & Trị bình quân</div>
+            <div id="rptDynamicTableContainer" class="table-responsive">
+                <p class="text-muted animate-pulse" style="font-style: italic;">Đang đồng bộ sổ đo điện tử...</p>
             </div>
 
             <div style="margin-top: 25px; display: flex; align-items: center; gap: 15px; page-break-inside: avoid;">
-                <div style="font-weight: bold; font-size: 11pt; color: #0f172a;">Chốt chặn kiểm định Quality Control:</div>
+                <div style="font-weight: bold; font-size: 11pt;">Trạng thái kiểm định kỹ thuật (QC):</div>
                 <div id="rptQcBadge">---</div>
             </div>
         </div>
 
         <div style="page-break-before: always; break-before: always;"></div>
 
-        <div class="page-sheet" style="margin-top: 10mm;">
-            <div class="section-title-a4">III. Hồ sơ chứng thực ảnh chống chế số liệu trái phép</div>
+        <div class="page-sheet" style="margin-top: 5mm;">
+            <div class="section-title-a4">III. Hồ sơ chứng thực ảnh hiện trường (Chống giả mạo số liệu)</div>
             
             <div class="img-evidence-grid">
                 <div class="img-evidence-card">
-                    <img id="rptImgSelfie" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='10' fill='%2394a3b8'>Ảnh Selfie Trạm Máy</text></svg>" alt="Ảnh Selfie Trạm Máy">
-                    <div class="evidence-caption">Minh chứng 1: Thí sinh/Nhóm tác chiến phối hợp tại vị trí đặt chân máy</div>
+                    <img id="rptImgSelfie" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f8f9fa'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Times New Roman' font-size='10' fill='%2394a3b8'>Ảnh Trạm Máy</text></svg>" alt="Ảnh Selfie Trạm Máy">
+                    <div class="evidence-caption">Hình 1: Sinh viên phối hợp kề cận tại vị trí đặt máy</div>
                 </div>
                 <div class="img-evidence-card">
-                    <img id="rptImgInstrument" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f1f5f9'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='10' fill='%2394a3b8'>Ảnh Số Đọc Chỉ Kính</text></svg>" alt="Ảnh Số Đọc Chỉ Kính">
-                    <div class="evidence-caption">Minh chứng 2: Trị số thực tế ghi nhận qua màn hình LCD hoặc tâm chỉ thập</div>
+                    <img id="rptImgInstrument" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23f8f9fa'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Times New Roman' font-size='10' fill='%2394a3b8'>Ảnh Chỉ Thập</text></svg>" alt="Ảnh Số Đọc Chỉ Kính">
+                    <div class="evidence-caption">Hình 2: Trị số ghi nhận thực tế qua thị kính/màn hình</div>
                 </div>
             </div>
 
             <div style="margin-top: 20px; font-size: 11pt;">
-                📝 <strong>Ghi chú/Ý kiến của sinh viên:</strong> 
+                📝 <strong>Ghi chú bổ sung của sinh viên:</strong> 
                 <span id="rptComment" style="font-style: italic; color: #334155;">---</span>
             </div>
 
-            <div class="section-title-a4" style="margin-top: 30px;">IV. Thẩm định & Nhập điểm bảo lưu của bộ môn</div>
-            <div style="min-height: 25mm; border: 1px dashed #475569; padding: 15px; font-size: 11pt; line-height: 1.6; background-color: #fafafa;">
+            <div class="section-title-a4" style="margin-top: 30px;">IV. Thẩm định & Phê duyệt điểm số của bộ môn</div>
+            <div style="min-height: 28mm; border: 1px dashed #000000; padding: 15px; font-size: 11pt; line-height: 1.6; background-color: #fafafa;">
                 <strong>Nhận xét chuyên môn của Giảng viên chấm thi hiện trường:</strong>
-                <p style="margin-top: 30px; border-bottom: 1px dashed #cbd5e1;"></p>
-                <p style="margin-top: 20px; border-bottom: 1px dashed #cbd5e1;"></p>
+                <p style="margin-top: 35px; border-bottom: 1px dashed #777777;"></p>
+                <p style="margin-top: 20px; border-bottom: 1px dashed #777777;"></p>
             </div>
 
             <div class="signature-zone">
                 <div>
-                    <p style="font-style: italic; margin-bottom: 45px; color: #475569;">TP. Hồ Chí Minh, ngày ...... tháng ...... năm 2026</p>
-                    <strong>Thí sinh nộp bài</strong><br>
-                    <span style="font-size: 9pt; color:#64748b; font-weight: normal;">(Ký và ghi rõ họ tên)</span>
+                    <p style="font-style: italic; margin-bottom: 50px; color: #334155;">TP. Hồ Chí Minh, ngày ...... tháng ...... năm 2026</p>
+                    <strong>Sinh viên nộp bài</strong><br>
+                    <span style="font-size: 9.5pt; color:#444444; font-weight: normal;">(Ký và ghi rõ họ tên)</span>
                 </div>
                 <div>
-                    <p style="font-style: italic; margin-bottom: 45px; color: #475569;">Xác nhận tại sân đo hiện trường</p>
-                    <strong>Giảng viên / Giám thị chấm thi</strong><br>
-                    <span style="font-size: 9pt; color:#64748b; font-weight: normal;">(Ký tên và phê điểm hoàn công)</span>
+                    <p style="font-style: italic; margin-bottom: 50px; color: #334155;">Xác nhận tại sân đo hiện trường</p>
+                    <strong>Giảng viên chấm thi</strong><br>
+                    <span style="font-size: 9.5pt; color:#444444; font-weight: normal;">(Ký tên và nhập điểm hoàn công)</span>
                 </div>
             </div>
         </div>
