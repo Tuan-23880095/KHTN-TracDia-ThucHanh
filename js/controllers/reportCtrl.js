@@ -52,7 +52,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         DOMUtils.setText("rptDateTime", dateFormatted);
         DOMUtils.setText("rptMachineType", pData.machine_type || "Máy Trắc Địa Bộ Môn");
         DOMUtils.setText("rptTargetName", pData.target_name || "Mốc hiện trường");
-
+        
+        const commentData = pData.student_comment || pData.student_coment || "Không có ghi chú thêm.";
+        DOMUtils.setText("rptComment", commentData);
+        
         // Gắn Link Ảnh Minh Chứng từ Google Drive vào thẻ đại diện
         if (pData.individual_photo_url) {
             document.getElementById("rptImgSelfie").src = pData.individual_photo_url;
