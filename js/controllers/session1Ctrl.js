@@ -181,84 +181,85 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 5. THEO DÕI REAL-TIME SỐ LIỆU KHOẢNG CÁCH LƯỢNG CỰ CỦA NHÓM (3 LẦN ĐO)
     // =========================================================================
     const grpInputs = ["grp_ct1", "grp_cd1", "grp_ct2", "grp_cd2", "grp_ct3", "grp_cd3"];
+    
+    const checkGroupInputs = () => {
+        const ct1 = DOMUtils.getNumberValue("grp_ct1");
+        const cd1 = DOMUtils.getNumberValue("grp_cd1");
+        const ct2 = DOMUtils.getNumberValue("grp_ct2");
+        const cd2 = DOMUtils.getNumberValue("grp_cd2");
+        const ct3 = DOMUtils.getNumberValue("grp_ct3");
+        const cd3 = DOMUtils.getNumberValue("grp_cd3");
+
+        let d1 = 0, d2 = 0, d3 = 0;
+        let validCount = 0;
+        let sumD = 0;
+
+        // Công thức tính khoảng cách ly tâm phẳng D (mét): (Chỉ trên_mm - Chỉ dưới_mm) / 10
+        const calcD = (t, b) => (t - b) / 10;
+
+        // Khảo nghiệm Lần đo số 1
+        if (!isNaN(ct1) && !isNaN(cd1)) {
+            if (ct1 <= cd1) {
+                DOMUtils.setText("grp_d1_display", "LỖI MIA", "text-danger font-bold");
+            } else {
+                d1 = calcD(ct1, cd1);
+                DOMUtils.setText("grp_d1_display", `${d1.toFixed(3)} m`, "text-success");
+                sumD += d1; validCount++;
+            }
+        } else { DOMUtils.setText("grp_d1_display", "0.000 m", "text-muted"); }
+
+        // Khảo nghiệm Lần đo số 2
+        if (!isNaN(ct2) && !isNaN(cd2)) {
+            if (ct2 <= cd2) {
+                DOMUtils.setText("grp_d2_display", "LỖI MIA", "text-danger font-bold");
+            } else {
+                d2 = calcD(ct2, cd2);
+                DOMUtils.setText("grp_d2_display", `${d2.toFixed(3)} m`, "text-success");
+                sumD += d2; validCount++;
+            }
+        } else { DOMUtils.setText("grp_d2_display", "0.000 m", "text-muted"); }
+
+        // Khảo nghiệm Lần đo số 3
+        if (!isNaN(ct3) && !isNaN(cd3)) {
+            if (ct3 <= cd3) {
+                DOMUtils.setText("grp_d3_display", "LỖI MIA", "text-danger font-bold");
+            } else {
+                d3 = calcD(ct3, cd3);
+                DOMUtils.setText("grp_d3_display", `${d3.toFixed(3)} m`, "text-success");
+                sumD += d3; validCount++;
+            }
+        } else { DOMUtils.setText("grp_d3_display", "0.000 m", "text-muted"); }
+
+        // Đánh giá QC lượng cự khi đủ dữ liệu 3 lần đo
+        if (validCount === 3) {
+            const avgD = sumD / 3;
+            const amplitude = MathUtils.calculateAmplitude([d1, d2, d3]);
+            const tolerance = 0.2; // Dung sai cho phép biên độ lệch giữa các lần đo là 0.2m (20cm)
+
+            if (amplitude <= tolerance) {
+                DOMUtils.setText("grp_d_avg", `${avgD.toFixed(3)} m`, "text-success font-bold");
+                DOMUtils.hideAlert("validationAlert");
+                if (document.getElementById("btnSubmitGroup")) {
+                    document.getElementById("btnSubmitGroup").disabled = false;
+                }
+            } else {
+                DOMUtils.setText("grp_d_avg", "VƯỢT HẠN MỨC", "text-danger font-bold");
+                DOMUtils.showAlert("validationAlert", `⚠️ Biên độ khoảng cách quá lớn! Độ lệch lớn nhất là ${amplitude.toFixed(3)}m (Cho phép $\\le 0.2m$). Yêu cầu nhóm đo lại!`, "danger");
+                if (document.getElementById("btnSubmitGroup")) {
+                    document.getElementById("btnSubmitGroup").disabled = true;
+                }
+            }
+        } else {
+            DOMUtils.setText("grp_d_avg", "Chưa đủ dữ liệu", "text-muted font-bold");
+            if (document.getElementById("btnSubmitGroup")) {
+                document.getElementById("btnSubmitGroup").disabled = true;
+            }
+        }
+    };
+
     grpInputs.forEach(id => {
         const inputEl = document.getElementById(id);
-        if (inputEl) {
-            inputEl.addEventListener("input", () => {
-                const ct1 = DOMUtils.getNumberValue("grp_ct1");
-                const cd1 = DOMUtils.getNumberValue("grp_cd1");
-                const ct2 = DOMUtils.getNumberValue("grp_ct2");
-                const cd2 = DOMUtils.getNumberValue("grp_cd2");
-                const ct3 = DOMUtils.getNumberValue("grp_ct3");
-                const cd3 = DOMUtils.getNumberValue("grp_cd3");
-
-                let d1 = 0, d2 = 0, d3 = 0;
-                let validCount = 0;
-                let sumD = 0;
-
-                // Công thức tính khoảng cách ly tâm phẳng D (mét): (Chỉ trên_mm - Chỉ dưới_mm) / 10
-                const calcD = (t, b) => (t - b) / 10;
-
-                // Khảo nghiệm Lần đo số 1
-                if (!isNaN(ct1) && !isNaN(cd1)) {
-                    if (ct1 <= cd1) {
-                        DOMUtils.setText("grp_d1_display", "LỖI MIA", "text-danger font-bold");
-                    } else {
-                        d1 = calcD(ct1, cd1);
-                        DOMUtils.setText("grp_d1_display", `${d1.toFixed(3)} m`, "text-success");
-                        sumD += d1; validCount++;
-                    }
-                } else { DOMUtils.setText("grp_d1_display", "0.000 m", "text-muted"); }
-
-                // Khảo nghiệm Lần đo số 2
-                if (!isNaN(ct2) && !isNaN(cd2)) {
-                    if (ct2 <= cd2) {
-                        DOMUtils.setText("grp_d2_display", "LỖI MIA", "text-danger font-bold");
-                    } else {
-                        d2 = calcD(ct2, cd2);
-                        DOMUtils.setText("grp_d2_display", `${d2.toFixed(3)} m`, "text-success");
-                        sumD += d2; validCount++;
-                    }
-                } else { DOMUtils.setText("grp_d2_display", "0.000 m", "text-muted"); }
-
-                // Khảo nghiệm Lần đo số 3
-                if (!isNaN(ct3) && !isNaN(cd3)) {
-                    if (ct3 <= cd3) {
-                        DOMUtils.setText("grp_d3_display", "LỖI MIA", "text-danger font-bold");
-                    } else {
-                        d3 = calcD(ct3, cd3);
-                        DOMUtils.setText("grp_d3_display", `${d3.toFixed(3)} m`, "text-success");
-                        sumD += d3; validCount++;
-                    }
-                } else { DOMUtils.setText("grp_d3_display", "0.000 m", "text-muted"); }
-
-                // Đánh giá QC lượng cự khi đủ dữ liệu 3 lần đo
-                if (validCount === 3) {
-                    const avgD = sumD / 3;
-                    const amplitude = MathUtils.calculateAmplitude([d1, d2, d3]);
-                    const tolerance = 0.2; // Dung sai cho phép biên độ lệch giữa các lần đo là 0.2m (20cm)
-
-                    if (amplitude <= tolerance) {
-                        DOMUtils.setText("grp_d_avg", `${avgD.toFixed(3)} m`, "text-success font-bold");
-                        DOMUtils.hideAlert("validationAlert");
-                        if (document.getElementById("btnSubmitGroup")) {
-                            document.getElementById("btnSubmitGroup").disabled = false;
-                        }
-                    } else {
-                        DOMUtils.setText("grp_d_avg", "VƯỢT HẠN MỨC", "text-danger font-bold");
-                        DOMUtils.showAlert("validationAlert", `⚠️ Biên độ khoảng cách quá lớn! Độ lệch lớn nhất là ${amplitude.toFixed(3)}m (Cho phép $\\le 0.2m$). Yêu cầu nhóm đo lại!`, "danger");
-                        if (document.getElementById("btnSubmitGroup")) {
-                            document.getElementById("btnSubmitGroup").disabled = true;
-                        }
-                    }
-                } else {
-                    DOMUtils.setText("grp_d_avg", "Chưa đủ dữ liệu", "text-muted font-bold");
-                    if (document.getElementById("btnSubmitGroup")) {
-                        document.getElementById("btnSubmitGroup").disabled = true;
-                    }
-                }
-            });
-        }
+        if (inputEl) inputEl.addEventListener("input", checkGroupInputs);
     });
 
     // =========================================================================
@@ -267,12 +268,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnPrintInd = document.getElementById("btnPrintIndividual");
     if (btnPrintInd) {
         btnPrintInd.addEventListener("click", () => {
-            let r1 = DOMUtils.getNumberValue("ind_r1");
-            if (isNaN(r1)) r1 = DOMUtils.getNumberValue("ind_sau1");
-            let r2 = DOMUtils.getNumberValue("ind_r2");
-            if (isNaN(r2)) r2 = DOMUtils.getNumberValue("ind_sau2");
-            let r3 = DOMUtils.getNumberValue("ind_r3");
-            if (isNaN(r3)) r3 = DOMUtils.getNumberValue("ind_sau3");
+            let r1 = DOMUtils.getNumberValue("ind_r1") || DOMUtils.getNumberValue("ind_sau1");
+            let r2 = DOMUtils.getNumberValue("ind_r2") || DOMUtils.getNumberValue("ind_sau2");
+            let r3 = DOMUtils.getNumberValue("ind_r3") || DOMUtils.getNumberValue("ind_sau3");
             
             const machineType = document.getElementById("indMachineType") ? document.getElementById("indMachineType").value : "Máy Thủy Bình";
             const targetName = document.getElementById("indTargetName") ? document.getElementById("indTargetName").value : "Mia chuẩn";
@@ -312,20 +310,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         formInd.addEventListener("submit", async (e) => {
             e.preventDefault();
             
-            let r1 = DOMUtils.getNumberValue("ind_r1");
-            if (isNaN(r1)) r1 = DOMUtils.getNumberValue("ind_sau1");
-            let r2 = DOMUtils.getNumberValue("ind_r2");
-            if (isNaN(r2)) r2 = DOMUtils.getNumberValue("ind_sau2");
-            let r3 = DOMUtils.getNumberValue("ind_r3");
-            if (isNaN(r3)) r3 = DOMUtils.getNumberValue("ind_sau3");
-
-            // 🌟 CHỐT CHẶN PHÒNG VỆ SĂN ID: Quét hết mọi khả năng đặt tên ID ô nhận xét của cả 2 phiên bản HTML
+            let r1 = DOMUtils.getNumberValue("ind_r1") || DOMUtils.getNumberValue("ind_sau1");
+            let r2 = DOMUtils.getNumberValue("ind_r2") || DOMUtils.getNumberValue("ind_sau2");
+            let r3 = DOMUtils.getNumberValue("ind_r3") || DOMUtils.getNumberValue("ind_sau3");
+            
+            // CHỐT CHẶN PHÒNG VỆ SĂN ID: Quét hết mọi khả năng đặt tên ID ô nhận xét của cả 2 phiên bản HTML
             let commentInput = document.getElementById("student_comment") || 
                                document.getElementById("ind_comment") || 
                                document.getElementById("indComment");
             const comment = commentInput ? commentInput.value.trim() : "";
             
-            const comment = document.getElementById("ind_comment") ? document.getElementById("ind_comment").value : (document.getElementById("student_comment") ? document.getElementById("student_comment").value : "");
             const selfieImg = document.getElementById("indSelfiePreview") ? document.getElementById("indSelfiePreview").src : "";
             const instImg = document.getElementById("indInstPreview") ? document.getElementById("indInstPreview").src : "";
 
@@ -413,7 +407,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             const avgDistance = (d1 + d2 + d3) / 3;
 
             const targetName = document.getElementById("grpTargetName") ? document.getElementById("grpTargetName").value : "Tuyến đo";
-            const comment = document.getElementById("grpComment") ? document.getElementById("grpComment").value : "";
+            const grpCommentInput = document.getElementById("grpComment") || document.getElementById("grp_comment");
+            const comment = grpCommentInput ? grpCommentInput.value.trim() : "";
             const grpImg = document.getElementById("grpPhotoPreview") ? document.getElementById("grpPhotoPreview").src : "";
 
             const btn = document.getElementById("btnSubmitGroup");
