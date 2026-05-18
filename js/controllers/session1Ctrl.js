@@ -318,6 +318,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             if (isNaN(r2)) r2 = DOMUtils.getNumberValue("ind_sau2");
             let r3 = DOMUtils.getNumberValue("ind_r3");
             if (isNaN(r3)) r3 = DOMUtils.getNumberValue("ind_sau3");
+
+            // 🌟 CHỐT CHẶN PHÒNG VỆ SĂN ID: Quét hết mọi khả năng đặt tên ID ô nhận xét của cả 2 phiên bản HTML
+            let commentInput = document.getElementById("student_comment") || 
+                               document.getElementById("ind_comment") || 
+                               document.getElementById("indComment");
+            const comment = commentInput ? commentInput.value.trim() : "";
             
             const comment = document.getElementById("ind_comment") ? document.getElementById("ind_comment").value : (document.getElementById("student_comment") ? document.getElementById("student_comment").value : "");
             const selfieImg = document.getElementById("indSelfiePreview") ? document.getElementById("indSelfiePreview").src : "";
