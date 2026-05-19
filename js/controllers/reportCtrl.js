@@ -57,11 +57,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         DOMUtils.setText("rptComment", commentData);
         
         // Gắn Link Ảnh Minh Chứng từ Google Drive vào thẻ đại diện
-        if (pData.individual_photo_url) {
+        // 5. Gắn Ảnh Minh Chứng (Ưu tiên Base64 để chống lỗi CORS khi xuất PDF)
+        
+        // Xử lý ảnh Selfie / Trạm máy
+        if (pData.individual_photo_base64) {
+            document.getElementById("rptImgSelfie").src = pData.individual_photo_base64;
+        } else if (pData.individual_photo_url) {
+            // Dự phòng nếu server xử lý base64 thất bại
             document.getElementById("rptImgSelfie").src = pData.individual_photo_url;
+        } else {
+            document.getElementById("rptImgSelfie").style.display = "none";
         }
-        if (pData.group_photo_url) {
+
+        // Xử lý ảnh Kính ngắm / Thiết bị
+        if (pData.group_photo_base64) {
+            document.getElementById("rptImgInstrument").src = pData.group_photo_base64;
+        } else if (pData.group_photo_url) {
             document.getElementById("rptImgInstrument").src = pData.group_photo_url;
+        } else {
+            document.getElementById("rptImgInstrument").style.display = "none";
         }
 
         // Cấu hình nhãn Quality Control đạt chuẩn hành chính
