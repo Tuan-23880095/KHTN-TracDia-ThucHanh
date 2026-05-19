@@ -17,12 +17,12 @@ class FirebaseUploader {
         if (!this.isInitialized) {
             const firebaseConfig = {
                 // THẦY COPY TỪ MỤC PROJECT SETTINGS CỦA FIREBASE DÁN VÀO ĐÂY:
-                apiKey: "AIzaSy_YOUR_API_KEY",
+                apiKey: "AIzaSyBNU5ILwVP3bUeMnD7RmYFsVUXIxU2U6d0",
                 authDomain: "link-anh-web.firebaseapp.com",
                 projectId: "link-anh-web",
                 storageBucket: "link-anh-web.firebasestorage.app",
-                messagingSenderId: "YOUR_SENDER_ID",
-                appId: "YOUR_APP_ID"
+                messagingSenderId: "541489679303",
+                appId: "1:541489679303:web:f48c80bfd4b574872fa7e2"
             };
             firebase.initializeApp(firebaseConfig);
             this.isInitialized = true;
