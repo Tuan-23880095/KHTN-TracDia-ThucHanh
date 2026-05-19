@@ -340,6 +340,28 @@ document.addEventListener("DOMContentLoaded", async () => {
             btn.innerHTML = "⏳ ĐANG ĐỒNG BỘ CLOUD...";
             btn.disabled = true;
 
+            try {
+                // 1. BÓC TÁCH FILE TỪ THẺ INPUT
+                const selfieInput = document.getElementById("indSelfieFile");
+                const instInput = document.getElementById("indInstFile");
+                
+                let selfieFirebaseUrl = "";
+                let instFirebaseUrl = "";
+        
+                // 2. NÉN VÀ UPLOAD SONG SONG LÊN FIREBASE (Nếu có chọn ảnh)
+                if (selfieInput.files && selfieInput.files[0]) {
+                    selfieFirebaseUrl = await FirebaseUploader.processAndUpload(
+                        selfieInput.files[0], 
+                        `${session.profile.mssv_id}_Buoi1_Selfie`
+                    );
+                }
+        
+                if (instInput.files && instInput.files[0]) {
+                    instFirebaseUrl = await FirebaseUploader.processAndUpload(
+                        instInput.files[0], 
+                        `${session.profile.mssv_id}_Buoi1_ChiKinh`
+                    );
+                }
             const payload = {
                 session_name: CURRENT_SESSION_NUM,
                 submit_type: "Cá nhân",
