@@ -7,11 +7,15 @@
 
 class FirebaseUploader {
     static isInitialized = false;
-    static scriptsLoaded = false;
 
-    // Hàm tải script an toàn, không dùng document.write bị Chrome chặn
+    // Hàm tải script ngầm an toàn, có check trùng lặp
     static loadScript(src) {
         return new Promise((resolve, reject) => {
+            // Chốt chặn: Nếu thư viện đã nằm trong thẻ <head> thì không tải lại nữa
+            if (document.querySelector(`script[src="${src}"]`)) {
+                resolve();
+                return;
+            }
             const script = document.createElement('script');
             script.src = src;
             script.onload = resolve;
@@ -22,13 +26,14 @@ class FirebaseUploader {
 
     // Khởi tạo Firebase
     static async init() {
-        if (!this.scriptsLoaded) {
+        // Chốt chặn: Kiểm tra biến firebase toàn cục
+        if (typeof firebase === 'undefined') {
             await this.loadScript("https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js");
             await this.loadScript("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js");
-            this.scriptsLoaded = true;
         }
 
-        if (!this.isInitialized) {
+        // Chỉ initializeApp nếu chưa có app nào tồn tại
+        if (!this.isInitialized && firebase.apps.length === 0) {
             const firebaseConfig = {
                 apiKey: "AIzaSyBNU5ILwVP3bUeMnD7RmYFsVUXIxU2U6d0",
                 authDomain: "link-anh-web.firebaseapp.com",
@@ -46,7 +51,7 @@ class FirebaseUploader {
      * Thuật toán Nén, Crop (4x6 hoặc 6x4) và Upload
      */
     static async processAndUpload(file, fileName) {
-        await this.init(); // Chờ Firebase tải xong mới chạy
+        await this.init(); 
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
