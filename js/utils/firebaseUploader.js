@@ -5,18 +5,31 @@
  * ==========================================================================
  */
 
-// Tích hợp Firebase SDK (Bản Compat CDN dành cho Vanilla JS)
-document.write('<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>');
-document.write('<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>');
-
 class FirebaseUploader {
     static isInitialized = false;
+    static scriptsLoaded = false;
 
-    // Khởi tạo Firebase (Thầy thay bằng Config lấy từ Console Firebase của thầy)
-    static init() {
+    // Hàm tải script an toàn, không dùng document.write bị Chrome chặn
+    static loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    // Khởi tạo Firebase
+    static async init() {
+        if (!this.scriptsLoaded) {
+            await this.loadScript("https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js");
+            await this.loadScript("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js");
+            this.scriptsLoaded = true;
+        }
+
         if (!this.isInitialized) {
             const firebaseConfig = {
-                // THẦY COPY TỪ MỤC PROJECT SETTINGS CỦA FIREBASE DÁN VÀO ĐÂY:
                 apiKey: "AIzaSyBNU5ILwVP3bUeMnD7RmYFsVUXIxU2U6d0",
                 authDomain: "link-anh-web.firebaseapp.com",
                 projectId: "link-anh-web",
@@ -31,12 +44,9 @@ class FirebaseUploader {
 
     /**
      * Thuật toán Nén, Crop (4x6 hoặc 6x4) và Upload
-     * @param {File} file - File ảnh lấy từ thẻ <input type="file">
-     * @param {string} fileName - Tên file muốn lưu (VD: 24270025_Buoi1_Selfie)
-     * @returns {Promise<string>} - Trả về Link URL công khai của Firebase
      */
     static async processAndUpload(file, fileName) {
-        this.init();
+        await this.init(); // Chờ Firebase tải xong mới chạy
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -44,22 +54,17 @@ class FirebaseUploader {
                 const img = new Image();
                 img.src = event.target.result;
                 img.onload = async () => {
-                    // 1. THUẬT TOÁN CROP TỶ LỆ 4x6 / 6x4
                     const canvas = document.createElement("canvas");
                     const ctx = canvas.getContext("2d");
                     
                     let targetWidth, targetHeight;
-                    const isLandscape = img.width > img.height; // Xác định ảnh ngang hay dọc
-
-                    // Khống chế kích thước tối đa (VD: Cạnh dài nhất là 1200px để giữ nét chữ số)
+                    const isLandscape = img.width > img.height; 
                     const MAX_SIZE = 1200;
 
                     if (isLandscape) {
-                        // Ảnh ngang (Khuôn 6x4 tức tỷ lệ 3:2)
                         targetWidth = MAX_SIZE;
                         targetHeight = MAX_SIZE * (2 / 3);
                     } else {
-                        // Ảnh dọc (Khuôn 4x6 tức tỷ lệ 2:3)
                         targetHeight = MAX_SIZE;
                         targetWidth = MAX_SIZE * (2 / 3);
                     }
@@ -67,7 +72,6 @@ class FirebaseUploader {
                     canvas.width = targetWidth;
                     canvas.height = targetHeight;
 
-                    // Tính toán khung crop để lấy tâm bức ảnh (Center Crop)
                     const imgRatio = img.width / img.height;
                     const targetRatio = targetWidth / targetHeight;
                     let cropWidth, cropHeight, cropX, cropY;
@@ -84,22 +88,15 @@ class FirebaseUploader {
                         cropY = (img.height - cropHeight) / 2;
                     }
 
-                    // Vẽ ảnh đã crop và nén lên Canvas
                     ctx.fillStyle = "#ffffff";
                     ctx.fillRect(0, 0, targetWidth, targetHeight);
                     ctx.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
 
-                    // 2. XUẤT RA BLOB (Chuẩn nén JPEG 80%) VÀ BẮN LÊN FIREBASE
                     canvas.toBlob(async (blob) => {
                         try {
                             const storageRef = firebase.storage().ref();
-                            // Lưu vào thư mục /TracDia/ như thầy mong muốn
                             const fileRef = storageRef.child(`TracDia/${fileName}_${Date.now()}.jpg`);
-                            
-                            // Tiến hành Upload
                             await fileRef.put(blob);
-                            
-                            // Lấy Link URL công khai trả về
                             const downloadURL = await fileRef.getDownloadURL();
                             resolve(downloadURL);
                         } catch (error) {
