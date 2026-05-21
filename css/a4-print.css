@@ -62,6 +62,16 @@
         print-color-adjust: exact !important;
         box-sizing: border-box;
     }
+    /* BẢO VỆ LOGO HÌNH ẢNH VÀ ĐỒ HỌA SVG KHÔNG BỊ BIẾN ĐỔI MÀU HOẶC TRONG SUỐT */
+    img.header-logo-img {
+        background: white !important; /* Đảm bảo logo có nền trắng sạch sẽ */
+    }
+    img.header-logo-img, img.header-logo-img * {
+        color: initial !important; 
+    }
+    svg, svg * {
+        color: initial !important; /* Giữ nguyên màu xanh thương hiệu gốc của logo Khoa */
+    }
 
     body {
         background: #4A148C !important;
