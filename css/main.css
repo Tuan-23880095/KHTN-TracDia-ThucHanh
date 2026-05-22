@@ -1,0 +1,41 @@
+/**
+ * ====================================================================
+ * TỆP CSS LÕI (MAIN.CSS)
+ * Vị trí: css/main.css
+ * Nhiệm vụ: Khai báo biến màu sắc chống lóa, font chữ và thiết lập gốc
+ * ====================================================================
+ */
+
+:root {
+    /* BẢNG MÀU CHỐNG LÓA NẮNG (High-Contrast Outdoor Palette) */
+    --color-primary: #1d4ed8;       /* Xanh dương đậm - Hấp thụ sáng tốt, dịu mắt */
+    --color-primary-hover: #1e3a8a;
+    --color-danger: #dc2626;        /* Đỏ cờ - Dùng cho cảnh báo lỗi QC/vượt sai số */
+    --color-success: #059669;       /* Xanh lá đậm - Dùng cho trạng thái Đạt chuẩn */
+    --color-warning: #d97706;       /* Cam đậm - Dùng cho cảnh báo trung bình */
+    
+    --bg-body: #f8fafc;             /* Trắng xám nhạt - Tránh lóa phản quang 100% trắng */
+    --bg-surface: #ffffff;
+    
+    --text-main: #0f172a;           /* Đen nhám (Slate-900) - Tương phản cực tốt ngoài trời */
+    --text-muted: #475569;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* VÔ CÙNG QUAN TRỌNG CHO MOBILE: Ngăn chặn thao tác double-tap zoom 
+       làm vỡ form khi sinh viên đang cố gõ số liệu nhanh ngoài nắng */
+    touch-action: manipulation; 
+    margin: 0;
+    padding: 0;
+}
+
+/* Ẩn các class tạm thời (Dành cho việc render DOM bằng JS) */
+.hidden {
+    display: none !important;
+}
