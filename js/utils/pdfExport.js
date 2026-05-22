@@ -2,9 +2,8 @@
  * ====================================================================
  * BỘ CÔNG CỤ XUẤT BẢN IN PDF (PDF EXPORT UTILITY)
  * Vị trí: js/utils/pdfExport.js
- * Nhiệm vụ: Kéo dữ liệu từ GAS (hoặc Cache), Đổ vào Template A4, 
- * Tự động sinh bảng biểu (Dynamic Table) và đồng bộ hình ảnh.
- * Áp dụng: URLSearchParams, Dynamic DOM Injection, Async Image Loading
+ * Nhiệm vụ: Kéo dữ liệu từ GAS, đổ vào Template A4, và xuất PDF 
+ * bằng thư viện html2pdf.js chống vỡ layout.
  * ====================================================================
  */
 
@@ -12,11 +11,9 @@ import userAuthInstance from '../core/UserAuth.js';
 import apiConnectorInstance from '../core/APIConnector.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 1. KIỂM TRA BẢO MẬT BẮT BUỘC
     if (!userAuthInstance.requireAuth()) return;
 
-    // 2. PHÂN TÍCH YÊU CẦU IN TỪ URL PARAMETERS
-    // Định dạng mong đợi: report-template.html?session=Buổi 1&studentId=22110001
+    // 1. Phân tích tham số URL
     const urlParams = new URLSearchParams(window.location.search);
     const sessionName = urlParams.get('session');
     const studentId = urlParams.get('studentId');
@@ -26,73 +23,128 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // 3. TẢI DỮ LIỆU TỪ BACKEND GOOGLE SHEETS
+    // 2. Kéo dữ liệu và bơm vào HTML
     await loadAndInjectData(sessionName, studentId);
+    
+    // 3. Sau khi dữ liệu và ảnh đã lên đủ, kích hoạt nút Bấm Xuất PDF
+    PDFExporter.init();
 });
 
-/**
- * Hàm điều phối chính: Kéo dữ liệu và Bơm vào giao diện A4
- */
 async function loadAndInjectData(sessionName, studentId) {
     const contentArea = document.getElementById('reportDynamicContentArea');
-    contentArea.innerHTML = '<div class="text-center py-10 font-bold animate-pulse">Đang truy xuất dữ liệu từ Hệ thống máy chủ...</div>';
-
+    const btnExport = document.getElementById('btnExportPDF');
+    
     try {
-        // Gọi API lên Google Sheets (Yêu cầu Backend Code.gs phải có hàm getSubmissionData)
         const response = await apiConnectorInstance.getFetch(`getSubmissionData&session=${encodeURIComponent(sessionName)}&studentId=${studentId}`);
         
-        if (!response.success || !response.data) {
-            throw new Error(response.message || "Không tìm thấy dữ liệu báo cáo cho sinh viên này.");
-        }
+        if (!response.success || !response.data) throw new Error(response.message);
 
-        const reportData = response.data; // { submission: {...}, measurements: [...] }
+        const reportData = response.data;
 
-        // BƯỚC 1: BƠM DỮ LIỆU ĐỊNH DANH (HEADER)
+        // Bơm dữ liệu Text
         document.getElementById('lblReportSessionTitle').textContent = reportData.submission.session_name.toUpperCase();
         document.getElementById('lblReportStudentName').textContent = reportData.submission.full_name || reportData.submission.student_id;
         document.getElementById('lblReportStudentId').textContent = reportData.submission.student_id;
         document.getElementById('lblReportGroupId').textContent = reportData.submission.group_id || "N/A";
         document.getElementById('lblReportSubmitType').textContent = reportData.submission.submit_type;
-        document.getElementById('lblReportStudentComment').textContent = reportData.submission.student_comment || "Không có ghi chú nào.";
+        document.getElementById('lblReportStudentComment').textContent = reportData.submission.student_comment || "Không có ghi chú.";
         
-        // Đóng dấu thời gian xuất bản in
         const now = new Date();
         document.getElementById('lblReportPrintTime').textContent = `${now.getHours()}:${now.getMinutes()} - ${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
 
-        // BƯỚC 2: RENDER BẢNG SỐ LIỆU ĐỘNG (DYNAMIC TABLE GENERATION)
+        // Sinh bảng biểu
         contentArea.innerHTML = generateMeasurementTableHTML(reportData.submission.session_name, reportData.measurements);
 
-        // BƯỚC 3: XỬ LÝ HÌNH ẢNH (BẤT ĐỒNG BỘ)
+        // Chờ tải ảnh Firebase xong
         await injectImages(reportData.submission);
 
-        // Đã tải xong mọi thứ, sẵn sàng in
-        console.log("✅ PDF Render Engine: Dữ liệu đã sẵn sàng!");
+        // Mở khóa nút in
+        if(btnExport) {
+            btnExport.innerHTML = "🖨️ KẾT XUẤT FILE PDF";
+            btnExport.disabled = false;
+        }
 
     } catch (error) {
-        console.error("Lỗi Export PDF:", error);
-        contentArea.innerHTML = `<div class="text-red-600 font-bold border-2 border-red-500 p-4">❌ Lỗi truy xuất: ${error.message}</div>`;
+        contentArea.innerHTML = `<div class="text-red-600 font-bold border-2 border-red-500 p-4">❌ Lỗi: ${error.message}</div>`;
+        if(btnExport) btnExport.innerHTML = "LỖI DỮ LIỆU";
     }
 }
 
-/**
- * Hàm Sinh HTML Bảng Biểu (Factory Function)
- * Tùy thuộc vào Buổi học, cấu trúc bảng trên giấy A4 sẽ khác nhau
- */
+// ==========================================================================
+// CLASS CHUYÊN TRÁCH RENDER PDF (Tích hợp từ code của bạn)
+// ==========================================================================
+class PDFExporter {
+    static generatePDF() {
+        // 1. Xác định vùng Canvas (Khung giấy A4) cần xuất
+        const element = document.getElementById('a4ReportCanvas');
+        if (!element) return;
+
+        // 2. Trích xuất thông tin định danh để tạo tên File chuẩn học vụ
+        const studentId = document.getElementById('lblReportStudentId').innerText.trim();
+        const sessionRaw = document.getElementById('lblReportSessionTitle').innerText.trim();
+        const cleanSession = sessionRaw.replace(/\s+/g, ''); 
+        const fileName = `GEO10055_PhieuThucTap_${studentId}_${cleanSession}.pdf`;
+
+        // 3. Cấu hình thông số Engine html2pdf
+        const options = {
+            margin:       0, 
+            filename:     fileName,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, letterRendering: true, backgroundColor: '#ffffff' },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // 4. Hiệu ứng UX trên nút bấm báo hiệu tiến trình
+        const exportBtn = document.getElementById('btnExportPDF');
+        if (exportBtn) {
+            exportBtn.innerHTML = "⏳ ĐANG RENDER BẢN IN...";
+            exportBtn.disabled = true;
+            exportBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        // 5. Kích hoạt xuất file và khôi phục trạng thái nút sau khi hoàn thành
+        html2pdf().set(options).from(element).save().then(() => {
+            if (exportBtn) {
+                exportBtn.innerHTML = "🖨️ KẾT XUẤT FILE PDF";
+                exportBtn.disabled = false;
+                exportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }).catch(err => {
+            console.error("Lỗi xuất PDF: ", err);
+            alert("Có lỗi xảy ra khi tạo PDF. Vui lòng thử lại.");
+            if (exportBtn) {
+                exportBtn.innerHTML = "⚠️ THỬ LẠI!";
+                exportBtn.disabled = false;
+                exportBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+    }
+
+    static init() {
+        const btnExport = document.getElementById('btnExportPDF');
+        if (btnExport) {
+            btnExport.addEventListener('click', (e) => {
+                e.preventDefault();
+                const confirmPrint = confirm("Xuất Phiếu thực tập sang PDF (Nên dùng trình duyệt Chrome/Safari)?");
+                if (confirmPrint) {
+                    this.generatePDF();
+                }
+            });
+        }
+    }
+}
+
+// ==========================================================================
+// CÁC HÀM TIỆN ÍCH DỰNG BẢNG VÀ TẢI ẢNH (Giữ nguyên)
+// ==========================================================================
 function generateMeasurementTableHTML(sessionName, measurements) {
-    // Nếu mảng rỗng
     if (!measurements || measurements.length === 0) {
         return `<div class="text-center italic border p-4">Không có dữ liệu đo đạc chi tiết.</div>`;
     }
-
-    // Lấy object đầu tiên làm mẫu (Vì kiến trúc chúng ta lưu mỗi lần đo là 1 row hoặc 1 JSON array)
     const data = measurements[0]; 
-
-    // CHUYÊN MỤC DÀNH CHO BUỔI 1 (Nhận diện thiết bị & Đọc số cơ bản)
     if (sessionName.includes("Buổi 1")) {
-        // Phục hồi JSON cấu tạo máy đã nén lúc gửi
         let parts = {};
         try { parts = JSON.parse(data.parts_json); } catch(e) {}
-
         return `
         <table class="w-full text-sm border-collapse border border-black text-left mt-2">
             <tbody>
@@ -107,7 +159,6 @@ function generateMeasurementTableHTML(sessionName, measurements) {
                     <td class="border border-black p-2">3. Ốc vi động: <span class="font-bold">${parts.p3 || ''}</span></td>
                     <td class="border border-black p-2">4. Ốc cân bằng: <span class="font-bold">${parts.p4 || ''}</span></td>
                 </tr>
-                
                 <tr>
                     <td class="border border-black p-2 font-bold bg-gray-100 mt-4" colspan="2">B. KẾT QUẢ ĐỌC SỐ LẦN (${data.reading_type || 'Giá trị'})</td>
                 </tr>
@@ -128,62 +179,33 @@ function generateMeasurementTableHTML(sessionName, measurements) {
             </tbody>
         </table>`;
     }
-
-    // NẾU LÀ BUỔI KHÁC (VD: Đo chênh cao Thủy bình)...
-    // Bạn có thể mở rộng khối if-else này cho các buổi 3, 5, 7 dựa trên cấu trúc Data Dictionary.
-    return `
-    <table class="w-full text-sm border-collapse border border-black text-center mt-2">
-        <thead class="bg-gray-100 font-bold">
-            <tr>
-                <td class="border border-black p-2">Lần đo 1</td>
-                <td class="border border-black p-2">Lần đo 2</td>
-                <td class="border border-black p-2">Lần đo 3</td>
-                <td class="border border-black p-2 uppercase">Trung bình</td>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="border border-black p-3 font-bold">${data.val_1}</td>
-                <td class="border border-black p-3 font-bold">${data.val_2}</td>
-                <td class="border border-black p-3 font-bold">${data.val_3}</td>
-                <td class="border border-black p-3 font-black text-lg bg-gray-50">${data.val_avg}</td>
-            </tr>
-        </tbody>
-    </table>`;
+    return `<div class="text-center italic border p-4">Cấu trúc bảng chưa được định nghĩa cho buổi này.</div>`;
 }
 
-/**
- * Hàm Tải Hình Ảnh An Toàn (Đảm bảo ảnh lên hết giấy mới cho in)
- */
 async function injectImages(submissionData) {
     const imgIndiv = document.getElementById('imgReportIndividual');
     const imgGroup = document.getElementById('imgReportGroup');
 
-    // Chèn ảnh cá nhân
     if (submissionData.photo_url && submissionData.photo_url !== "No_Image") {
         await loadImageAsync(imgIndiv, submissionData.photo_url);
     }
-
-    // Chèn ảnh nhóm (Nếu có lưu trong JSON)
-    // Lưu ý: Tùy thiết kế backend, ảnh nhóm có thể nằm ở cột khác hoặc payload khác
     if (submissionData.group_photo_url && submissionData.group_photo_url !== "No_Image") {
         await loadImageAsync(imgGroup, submissionData.group_photo_url);
     }
 }
 
-/**
- * Promise Helper: Đợi ảnh tải xong (Tránh lỗi in ra PDF bị ô vuông trắng)
- */
 function loadImageAsync(imgElement, src) {
     return new Promise((resolve) => {
         imgElement.onload = () => {
-            imgElement.classList.remove('hidden'); // Hiển thị khi tải xong
+            imgElement.classList.remove('hidden'); 
             resolve();
         };
         imgElement.onerror = () => {
-            console.error("Không thể tải ảnh minh chứng từ Firebase:", src);
-            resolve(); // Vẫn resolve để không chặn luồng in ấn
+            console.error("Không thể tải ảnh:", src);
+            resolve(); 
         };
+        // Cross-Origin cực kỳ quan trọng để html2canvas chụp được ảnh từ domain khác (Firebase)
+        imgElement.crossOrigin = "Anonymous"; 
         imgElement.src = src;
     });
 }
