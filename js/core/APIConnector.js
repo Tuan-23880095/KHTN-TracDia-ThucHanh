@@ -11,7 +11,7 @@ export class APIConnector {
     // 1. CẤU HÌNH TẬP TRUNG (Static Properties) - Đáp ứng yêu cầu chứa cả URL và Firebase
     static CONFIG = {
         // Đường dẫn URL Web App nhận được sau khi bạn Deploy file Code.gs trên Apps Script
-        BACKEND_URL: "https://script.google.com/macros/s/AKfycbwGq-_fpYG4F_-gxBaiTrTspV2NxEg8tNdH-N3I9eCydwnlbIUBR6up3ibT-vJDTQbG/exec",
+        BACKEND_URL: "https://script.google.com/macros/s/AKfycbxLKzfpNze4yGBYeoNiVZg4whAatW95TgMwP9j6czQcbyWQcoNJnnipZX3JA3SapoCa/exec",
         
         // Lưu trữ ID dự án Firebase để phục vụ việc kiểm tra tính đồng bộ hệ thống khi cần
         FIREBASE_PROJECT_ID: "link-anh-web"
