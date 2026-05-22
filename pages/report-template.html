@@ -9,6 +9,10 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
+    <link rel="stylesheet" href="../css/a4-print.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/a4-print.css">
 
@@ -39,12 +43,12 @@
         <button onclick="window.history.back()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold text-xs py-3 px-5 rounded-xl shadow-lg transition-all uppercase tracking-wide">
             ⬅️ Quay lại
         </button>
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl shadow-lg transition-all uppercase tracking-wider">
-            🖨️ Tiến hành In / Xuất PDF
+        <button id="btnExportPDF" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl shadow-lg transition-all uppercase tracking-wider disabled:opacity-50">
+            🖨️ ĐANG NẠP DỮ LIỆU...
         </button>
     </div>
 
-    <div class="a4-page space-y-6">
+    <div id="a4ReportCanvas" class="a4-page space-y-6">
         
         <header class="border-b-2 border-black pb-4 grid grid-cols-12 gap-2 items-start">
             <div class="col-span-7 text-center space-y-1">
