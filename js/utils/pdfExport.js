@@ -34,6 +34,22 @@ async function loadAndInjectData(sessionName, studentId) {
     const contentArea = document.getElementById('reportDynamicContentArea');
     const btnExport = document.getElementById('btnExportPDF');
     
+    const reportData = response.data;
+    const currentUser = userAuthInstance.getUser(); // Lấy thông tin user hiện tại
+    // 1. Logic phân quyền hiển thị nút In Nhóm
+    const btnGroup = document.getElementById('btnExportGroup');
+    if (currentUser && currentUser.role === 'leader') {
+        btnGroup.classList.remove('hidden'); // Hiển thị nút cho Leader
+    }
+
+    // 2. Cấu hình cho nút In Cá Nhân
+    const btnIndividual = document.getElementById('btnExportIndividual');
+    btnIndividual.onclick = () => PDFExporter.generatePDF('a4ReportIndividual');
+
+    // 3. Cấu hình cho nút In Nhóm (nếu cần in khu vực khác)
+    if (btnGroup) {
+        btnGroup.onclick = () => PDFExporter.generatePDF('a4ReportGroup');
+    }
     try {
         const response = await apiConnectorInstance.getFetch(`getSubmissionData&session=${encodeURIComponent(sessionName)}&studentId=${studentId}`);
         
@@ -74,10 +90,13 @@ async function loadAndInjectData(sessionName, studentId) {
 // CLASS CHUYÊN TRÁCH RENDER PDF (Tích hợp từ code của bạn)
 // ==========================================================================
 class PDFExporter {
-    static generatePDF() {
+    static generatePDF(elementId) {
         // 1. Xác định vùng Canvas (Khung giấy A4) cần xuất
-        const element = document.getElementById('a4ReportCanvas');
-        if (!element) return;
+        const element = document.getElementById(elementId);
+        if (!element) {
+        alert("Không tìm thấy vùng dữ liệu để in.");
+        return;
+        }
 
         // 2. Trích xuất thông tin định danh để tạo tên File chuẩn học vụ
         const studentId = document.getElementById('lblReportStudentId').innerText.trim();
