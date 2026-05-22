@@ -62,7 +62,7 @@ class UserAuth {
         localStorage.removeItem(this.SESSION_KEY);
         this.currentUser = null;
         // Chuyển hướng về trang chủ (index.html)
-        window.location.replace('../index.html');
+        window.location.replace('index.html');
     }
 
     /**
