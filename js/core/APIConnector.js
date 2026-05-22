@@ -9,7 +9,7 @@
 class APIConnector {
     
     // 🔴 QUAN TRỌNG: Thầy sẽ thay thế đường link này bằng URL thực tế sau khi Deploy Google Apps Script
-    static SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyw_31erP_gacJDLb5Ps8LMM8m-37G44Di2yYqE5NMa70_vFqFF1dHYGK5sb2slDaEB/exec";
+    static SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyw0bF-PmGP-aeI9lzSkzGNVPUumP6cojc0MVHwW6lqgoJZn_MgWWnRNmORR_DQQoAG/exec";
 
     /**
      * Gửi yêu cầu POST chứa dữ liệu JSON lên Google Apps Script
