@@ -2,133 +2,90 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập | Hệ thống Thực hành Trắc địa | HCMUS</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Đăng nhập - Hệ thống Thực hành Trắc địa</title>
+
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
+    
+    </head>
+<body class="bg-light">
 
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-text {
-            background: linear-gradient(to right, #2563eb, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-
-    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-full max-w-3xl h-full pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
-    </div>
-
-    <div class="max-w-xl w-full bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-gray-100 text-center transition-all relative z-10">
+    <main class="login-container">
         
-        <div class="space-y-6 text-center mb-8">
+        <header class="space-y-6 text-center py-8 px-4 w-full">
+            
             <div class="flex items-center justify-center gap-4 sm:gap-6">
-                <div class="h-12 sm:h-14 flex-shrink-0">
-                    <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Logo-HCMUS-300x246.jpg" 
-                         alt="Logo HCMUS" class="h-full w-auto object-contain">
+                
+                <div class="h-12 sm:h-16 flex-shrink-0">
+                    <img src="assets/img/logo-hcmus.png" 
+                         alt="Logo Đại học Khoa học Tự nhiên" 
+                         class="h-full w-auto object-contain">
                 </div>
+        
                 <div class="flex flex-col justify-center space-y-1">
-                    <h2 class="text-xs sm:text-sm font-bold text-blue-700 tracking-widest uppercase leading-tight m-0">
-                        Trường ĐH Khoa học Tự nhiên
+                    <h2 class="text-xs sm:text-base font-bold text-blue-800 tracking-widest uppercase leading-tight m-0">
+                        Đại học Khoa học Tự nhiên - ĐHQG HCM
                     </h2>
-                    <h2 class="text-xs sm:text-sm font-bold text-blue-700 tracking-widest uppercase leading-tight m-0">
+                    <h2 class="text-sm sm:text-lg font-extrabold text-blue-600 tracking-widest uppercase leading-tight m-0">
                         Khoa Địa Chất
                     </h2>
                 </div>
-                <div class="h-12 sm:h-14 flex-shrink-0">
-                    <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Geology-50PNG-300x300.png" 
-                         alt="Logo Khoa Địa chất" class="h-full w-auto object-contain">
+        
+                <div class="h-12 sm:h-16 flex-shrink-0">
+                    <img src="assets/img/logo-geology.png" 
+                         alt="Logo Khoa Địa chất" 
+                         class="h-full w-auto object-contain">
                 </div>
             </div>
         
-            <div class="space-y-2 pt-2">
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
-                    Hệ Thống Thực Hành <br> <span class="gradient-text">Trắc Địa (GEO10055)</span>
+            <div class="space-y-4 pt-4">
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
+                    Hệ Thống Thực Hành <span class="gradient-text">Trắc Địa</span>
                 </h1>
-                <p class="text-sm text-gray-500 font-medium mt-2">Đăng nhập để vào bảng điều khiển và nộp số liệu</p>
+                <h3 class="text-sm font-bold text-gray-500 tracking-widest uppercase">
+                    Học phần: GEO10055
+                </h3>
             </div>
-        </div>
+        </header>
 
-        <hr class="border-gray-200 mb-8">
-
-        <form id="loginForm" class="space-y-6 text-left max-w-sm mx-auto">
-            
-            <div id="errorMessage" class="hidden bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded text-sm font-medium transition-all" role="alert">
-                </div>
-
-            <div>
-                <label for="mssv" class="block text-sm font-semibold text-gray-700 mb-2">Mã số sinh viên (MSSV)</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+        <section class="login-box">
+            <form id="loginForm" novalidate>
+                
+                <div id="authErrorMessage" class="alert-error hidden" role="alert">
                     </div>
-                    <input type="text" id="mssv" name="mssv" required autocomplete="username"
-                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 bg-gray-50 focus:bg-white outline-none" 
-                        placeholder="Nhập MSSV của bạn">
-                </div>
-            </div>
 
-            <div>
-                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mật khẩu</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
-                    <input type="password" id="password" name="password" required autocomplete="current-password"
-                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-gray-900 bg-gray-50 focus:bg-white outline-none" 
-                        placeholder="••••••••">
+                <div class="form-group">
+                    <label for="txtUserId">Mã số sinh viên (MSSV) / Giảng viên</label>
+                    <input type="text" id="txtUserId" name="user_id" class="input-large" 
+                           placeholder="Nhập MSSV của bạn" inputmode="numeric" required>
                 </div>
-            </div>
 
-            <div class="flex items-center justify-between text-sm">
-                <div class="flex items-center">
-                    <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer">
-                    <label for="remember_me" class="ml-2 block text-gray-700 cursor-pointer font-medium">Ghi nhớ tài khoản</label>
+                <div class="form-group">
+                    <label for="txtPassword">Mật khẩu</label>
+                    <input type="password" id="txtPassword" name="password" class="input-large" 
+                           placeholder="Nhập mật khẩu" required>
                 </div>
-                <div>
-                    <button type="button" id="btnForgotPassword" class="font-semibold text-blue-600 hover:text-blue-800 transition-colors focus:outline-none">
-                        Quên mật khẩu?
+
+                <div class="form-actions">
+                    <button type="submit" id="btnLogin" class="btn-primary btn-block btn-large">
+                        <span id="btnLoginText">ĐĂNG NHẬP HỆ THỐNG</span>
+                        <span id="btnLoginSpinner" class="loader hidden"></span>
                     </button>
                 </div>
-            </div>
+                
+            </form>
+        </section>
 
-            <div>
-                <button type="submit" id="btnSubmitLogin" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-md text-base font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all hover:-translate-y-0.5">
-                    ĐĂNG NHẬP
-                </button>
-            </div>
-        </form>
-    </div>
-    
-    <footer class="mt-8 text-center relative z-10">
-        <p class="text-sm font-medium text-gray-500">
-            &copy; 2026 Phát triển bởi ThS. Đinh Quốc Tuấn <br> Mục đích giáo dục, phi lợi nhuận.
-        </p>
-        <div class="mt-2 flex justify-center space-x-4 text-xs text-blue-600 font-semibold uppercase tracking-tighter">
-            <a href="#" class="hover:underline hover:text-blue-800">Hướng dẫn sử dụng</a>
-            <span class="text-gray-400">•</span>
-            <a href="mailto:gv.dongoc@hcmus.edu.vn" class="hover:underline hover:text-blue-800">Hỗ trợ kỹ thuật</a>
-        </div>
-    </footer>
+        <footer class="login-footer">
+            <p>Hệ thống Hỗ trợ Thực địa v1.0 &copy; 2025</p>
+        </footer>
 
-    <script src="js/core/APIConnector.js"></script>
-    
-    <script src="js/core/UserAuth.js"></script>
-    
-    <script src="js/controllers/authCtrl.js"></script>
+    </main>
+
+    <script type="module" src="js/core/APIConnector.js"></script>
+    <script type="module" src="js/core/UserAuth.js"></script>
+    <script type="module" src="js/controllers/authCtrl.js"></script>
 
 </body>
 </html>
