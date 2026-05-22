@@ -1,0 +1,101 @@
+/**
+ * ====================================================================
+ * TỆP CSS THÀNH PHẦN (COMPONENTS.CSS)
+ * Vị trí: css/components.css
+ * Nhiệm vụ: Chuẩn hóa nút bấm to (cho tay dính đất), form nhập liệu to rõ
+ * ====================================================================
+ */
+
+/* ================== 1. HỆ THỐNG NÚT BẤM (BUTTONS) ================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Chiều cao 56px: To hơn chuẩn 44px của Apple để ngón tay dễ bấm khi dính đất/mồ hôi */
+    min-height: 56px; 
+    padding: 0 1.5rem;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Nút Submit / Hành động chính */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: #ffffff;
+}
+
+.btn-primary:active {
+    background-color: var(--color-primary-hover);
+    transform: translateY(2px); /* Hiệu ứng lún vật lý khi bấm */
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+}
+
+/* Nút bị vô hiệu hóa (Khi đang chờ upload ảnh hoặc lỗi QC) */
+.btn:disabled {
+    background-color: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ================== 2. Ô NHẬP LIỆU (INPUT FIELDS) ================== */
+.input-field {
+    width: 100%;
+    min-height: 56px; /* Đồng bộ chiều cao với nút bấm */
+    padding: 0 1rem;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1.125rem; /* 18px: Ép trình duyệt iOS không tự động zoom in khi focus */
+    font-weight: 700;
+    color: var(--text-main);
+    background-color: var(--bg-surface);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    /* Quầng sáng dày để nhận diện ô đang gõ ngoài nắng */
+    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.15); 
+}
+
+/* Trạng thái lỗi (Bôi đỏ Input) - Controller sẽ gọi class này */
+.input-error {
+    border-color: var(--color-danger);
+    background-color: #fef2f2;
+    color: var(--color-danger);
+}
+
+/* ================== 3. KHỐI BỌC NỘI DUNG (CARDS) ================== */
+.card-anti-glare {
+    background: var(--bg-surface);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    /* Đổ bóng lan tỏa mờ để khối hộp nổi bật trên nền xám nhạt */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+/* ================== 4. VÒNG XOAY TẢI DỮ LIỆU (SPINNER) ================== */
+.spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
