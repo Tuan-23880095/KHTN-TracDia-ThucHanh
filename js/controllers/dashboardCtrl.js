@@ -92,8 +92,8 @@ async function renderStudentDashboard(container, studentId) {
         
         COURSE_SESSIONS.forEach(session => {
             const isCompleted = completedSessions.includes(session.id);
-            const cardHTML = generateSessionCard(session, isCompleted);
-            // Gắn khối HTML vào lưới
+            // Truyền thêm biến studentId vào để cấy vào link PDF
+            const cardHTML = generateSessionCard(session, isCompleted, studentId); 
             container.insertAdjacentHTML('beforeend', cardHTML);
         });
 
