@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Kết quả Thực địa Trắc địa | Khung A4</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/a4-print.css">
+
+    <style>
+        body { font-family: 'Inter', Arial, sans-serif; }
+        
+        /* Định dạng khung xem trước trên trình duyệt mô phỏng đúng tờ giấy A4 */
+        @media screen {
+            body {
+                background-color: #64748b; /* Nền xám tối bao quanh để làm nổi bật tờ giấy trắng */
+                padding: 40px 0;
+            }
+            .a4-page {
+                background-color: #ffffff;
+                width: 210mm;
+                min-height: 297mm;
+                margin: 0 auto;
+                padding: 20mm 15mm;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                border-radius: 4px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased text-black">
+
+    <div class="no-print fixed top-5 right-5 z-50 flex gap-3">
+        <button onclick="window.history.back()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold text-xs py-3 px-5 rounded-xl shadow-lg transition-all uppercase tracking-wide">
+            ⬅️ Quay lại
+        </button>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-6 rounded-xl shadow-lg transition-all uppercase tracking-wider">
+            🖨️ Tiến hành In / Xuất PDF
+        </button>
+    </div>
+
+    <div class="a4-page space-y-6">
+        
+        <header class="border-b-2 border-black pb-4 grid grid-cols-12 gap-2 items-start">
+            <div class="col-span-7 text-center space-y-1">
+                <h2 class="text-xs font-bold tracking-wide uppercase leading-tight">
+                    Đại học Quốc gia Thành phố Hồ Chí Minh
+                </h2>
+                <h2 class="text-xs font-black tracking-wider uppercase leading-tight">
+                    Trường Đại học Khoa học Tự nhiên
+                </h2>
+                <h3 class="text-[11px] font-bold text-gray-700 uppercase tracking-widest">
+                    Khoa Địa chất - Bộ môn ĐCTV & ĐCCT
+                </h3>
+            </div>
+            <div class="col-span-5 text-center space-y-1">
+                <h2 class="text-xs font-black tracking-wide uppercase">
+                    Cộng hòa Xã hội Chủ nghĩa Việt Nam
+                </h2>
+                <h3 class="text-[10px] font-bold underline underline-offset-4 tracking-wide">
+                    Độc lập - Tự do - Hạnh phúc
+                </h3>
+            </div>
+        </header>
+
+        <section class="text-center space-y-2 py-2">
+            <h1 class="text-xl font-black tracking-tight uppercase">
+                Phiếu Kết Quả Thực Tập Trắc Địa
+            </h1>
+            <h2 id="lblReportSessionTitle" class="text-sm font-black text-blue-800 tracking-wide uppercase">
+                [TÊN BUỔI THỰC HÀNH SẼ ĐƯỢC CHÈN DYNAMIC TẠI ĐÂY]
+            </h2>
+            <p class="text-[10px] text-gray-500 italic">
+                Học phần: GEO10055 - Trắc địa đại cương | Thời gian xuất bản: <span id="lblReportPrintTime">...</span>
+            </p>
+        </section>
+
+        <fieldset class="space-y-3">
+            <legend>I. Thông tin chung hiện trường</legend>
+            <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
+                <div>
+                    <span class="font-bold">Họ và tên sinh viên:</span> 
+                    <span id="lblReportStudentName" class="font-semibold underline decoration-dotted">...</span>
+                </div>
+                <div>
+                    <span class="font-bold">Mã số sinh viên (MSSV):</span> 
+                    <span id="lblReportStudentId" class="font-mono font-bold">...</span>
+                </div>
+                <div>
+                    <span class="font-bold">Mã nhóm thực địa:</span> 
+                    <span id="lblReportGroupId" class="font-semibold">...</span>
+                </div>
+                <div>
+                    <span class="font-bold">Hình thức nộp bài:</span> 
+                    <span id="lblReportSubmitType" class="font-semibold">...</span>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset id="reportDynamicContentArea" class="space-y-4 keep-together">
+            <legend>II. Số liệu đo đạc và Kiểm soát quy phạm (QC)</legend>
+            
+            <div class="no-print text-center py-6 text-gray-400 italic text-xs">
+                Hệ thống đang chờ lệnh nạp bảng số liệu đo chi tiết từ lớp xử lý dữ liệu...
+            </div>
+            
+            </fieldset>
+
+        <fieldset class="keep-together space-y-3">
+            <legend>III. Hình ảnh minh chứng hiện trường</legend>
+            <p class="text-xs text-gray-400 italic no-print">Ảnh chụp thực tế định vị GPS và minh chứng bọt thủy/thị kính máy đo:</p>
+            
+            <div class="flex flex-wrap gap-4 justify-start items-start">
+                <div class="text-center space-y-1">
+                    <img id="imgReportIndividual" src="" alt="Ảnh minh chứng cá nhân" class="max-height-[180px] w-auto object-contain hidden">
+                    <span class="text-[10px] font-bold text-gray-500 block">Minh chứng tác vụ</span>
+                </div>
+                <div class="text-center space-y-1">
+                    <img id="imgReportGroup" src="" alt="Ảnh minh chứng nhóm" class="max-height-[180px] w-auto object-contain hidden">
+                    <span class="text-[10px] font-bold text-gray-500 block">Minh chứng toàn cảnh trạm máy</span>
+                </div>
+            </div>
+        </fieldset>
+
+        <footer class="keep-together pt-6 grid grid-cols-12 gap-4 text-center text-sm">
+            <div class="col-span-4 text-left space-y-1.5">
+                <span class="font-bold uppercase text-xs block text-gray-700">1. Ghi chú của Sinh viên:</span>
+                <p id="lblReportStudentComment" class="text-xs text-gray-600 italic leading-relaxed border-b border-gray-200 pb-2">
+                    Không có ghi chú nào.
+                </p>
+            </div>
+            
+            <div class="col-span-4 space-y-12 pt-4">
+                <div>
+                    <span class="italic text-xs block">TP. Hồ Chí Minh, ngày.....tháng.....năm 2026</span>
+                    <span class="font-bold uppercase tracking-wide text-xs block mt-1">Sinh viên thực hiện đo</span>
+                </div>
+                <div class="text-xs text-gray-300">(Ký và ghi rõ họ tên)</div>
+            </div>
+
+            <div class="col-span-4 border-2 border-black p-3 bg-gray-50 rounded-xl space-y-2">
+                <span class="font-black uppercase text-xs tracking-wider block text-blue-900">2. Đánh giá của Giảng viên</span>
+                <div class="border-b border-dashed border-gray-400 py-3 text-left">
+                    <span class="text-xs font-bold text-gray-500">ĐIỂM SỐ TIẾN TRÌNH:</span>
+                    <div class="text-center text-xl font-black text-red-600 py-1">.... / 10</div>
+                </div>
+                <div class="text-left space-y-6 pt-2">
+                    <span class="text-xs font-bold text-gray-500 block">CHỮ KÝ CỦA GV COI THI:</span>
+                    <div class="text-center text-xs text-gray-300">(Ký và ghi tên nghiệm thu máy)</div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script type="module" src="../js/utils/pdfExport.js"></script>
+
+</body>
+</html>
