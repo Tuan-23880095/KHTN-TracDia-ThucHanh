@@ -1,0 +1,165 @@
+/**
+ * ====================================================================
+ * TỆP ĐỊNH DẠNG BẢN IN KHỔ GIẤY A4 TĨNH (A4 PRINT STYLESHEET)
+ * Vị trí: css/a4-print.css
+ * Nhiệm vụ: Tối ưu hóa layout Web Form thành Phiếu kết quả học thuật A4 chuẩn
+ * Áp dụng: CSS Paged Media, Anti-Orphan Layout, Form Flattening
+ * ====================================================================
+ */
+
+/* ================== 1. THIẾT LẬP KÍCH THƯỚC TRANG GIẤY TĨNH ================== */
+@page {
+    size: A4;
+    /* Lề chuẩn học thuật: Trên/Dưới 20mm, Trái/Phải 15mm */
+    margin: 20mm 15mm 20mm 15mm; 
+}
+
+@media print {
+    /* Ép toàn bộ cấu trúc nền tảng về màu trắng tinh, chữ đen đậm để tiết kiệm mực và tăng độ rõ nét */
+    html, body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-family: 'Arial', 'Times New Roman', serif;
+        font-size: 11pt; /* Kích cỡ chữ chuẩn văn bản in */
+        line-height: 1.5;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* ================== 2. ẨN CÁC THÀNH PHẦN KHÔNG THUỘC BẢN IN (UI ELEMENTS) ================== */
+    /* Ẩn navigation, nút bấm quay lại, các nút bấm submit, thanh tab chuyển đổi, và khay chọn file camera */
+    nav, 
+    header.gradient-header, 
+    .btn, 
+    #btnSubmitForm, 
+    #btnLogin,
+    .bg-white.p-1.5.rounded-2xl.shadow-sm, /* Khung bọc tab chuyển đổi */
+    input[type="file"],
+    footer,
+    .no-print {
+        display: none !important;
+    }
+
+    /* ================== 3. LÀM PHẲNG BIỂU MẪU (FORM FLATTENING LOGIC) ================== */
+    /* Biến đổi các ô nhập liệu (Input/Select) từ dạng khung tương tác thành chữ văn bản tĩnh nằm trên giấy */
+    input, select, textarea {
+        border: none !important;
+        border-bottom: 1px dotted #000000 !important; /* Tạo đường chấm nhẹ dưới chân số liệu như phiếu điền tay */
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 2px 0 !important;
+        margin: 0 !important;
+        font-size: 11pt !important;
+        font-weight: bold !important; /* Làm nổi bật số liệu sinh viên đo được */
+        color: #000000 !important;
+        appearance: none !important; /* Xóa mũi tên tam giác mặc định của thẻ select trên mobile */
+        -webkit-appearance: none !important;
+        width: auto !important;
+        min-height: auto !important;
+    }
+
+    /* Vô hiệu hóa hành vi cuộn (scroll) của textarea, ép hiển thị trọn vẹn chữ nhận xét */
+    textarea {
+        resize: none !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
+
+    /* Các ô Read-only định danh (Mã số SV, tên SV) xóa bỏ màu nền xám mờ */
+    .input-field.\!bg-gray-100, 
+    input[readonly] {
+        background-color: transparent !important;
+        border-bottom: none !important; /* Thông tin định danh cố định không cần gạch chân */
+    }
+
+    /* ================== 4. QUY HOẠCH LẠI BỐ CỤC KHỐI (CARDS & GRIDS) ================== */
+    /* Xóa bỏ đổ bóng (Box-shadow) và bo góc quá đà của giao diện web, đưa về dạng Section phẳng */
+    .card-anti-glare, fieldset {
+        border: none !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 15px 0 !important;
+        margin-bottom: 20px !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        width: 100% !important;
+    }
+
+    legend {
+        font-size: 12pt !important;
+        font-weight: 800 !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #000000 !important;
+        width: 100% !important;
+        padding-bottom: 4px !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Chuyển đổi các lưới chia cột (Grid mobile) thành hàng ngang phân bổ đều trên giấy A4 */
+    .grid {
+        display: block !important; /* Hủy grid phức tạp */
+    }
+
+    /* Tạo bố cục hàng ngang phẳng cho thông tin chung (MSSV - Họ Tên nằm song song) */
+    .grid-cols-1.sm\:grid-cols-2 {
+        display: table !important;
+        width: 100% !important;
+    }
+    
+    .grid-cols-1.sm\:grid-cols-2 > div {
+        display: table-cell !important;
+        width: 50% !important;
+        vertical-align: top !important;
+        padding-right: 15px;
+    }
+
+    /* Định dạng hộp chứa 3 lần đo (Lần 1 - 2 - 3 nằm ngang thẳng hàng hàng lối) */
+    .grid.grid-cols-3 {
+        display: table !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+    }
+
+    .grid.grid-cols-3 > div {
+        display: table-cell !important;
+        width: 33.33% !important;
+        text-align: center !important;
+        border: 1px solid #000000 !important;
+        padding: 8px !important;
+    }
+
+    /* Hộp tính giá trị trung bình cộng */
+    .bg-purple-50, .bg-blue-50, .bg-emerald-50 {
+        background-color: #f8fafc !important; /* Đổi màu nền rực rỡ thành xám cực nhẹ để quét photo không bị đen */
+        border: 1px dashed #000000 !important;
+        color: #000000 !important;
+        padding: 10px !important;
+    }
+
+    /* ================== 5. KIỂM SOÁT NGẮT TRANG CHỐNG RỚT CHỮ (PAGE BREAK CONTROL) ================== */
+    /* Ngăn chặn tuyệt đối việc một Section, một bảng đo, hoặc khối chữ ký bị chặt đôi khi sang trang 2 */
+    .keep-together, 
+    fieldset, 
+    .card-anti-glare,
+    .bg-purple-50 {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Ngăn chặn việc tiêu đề nằm cô độc ở đáy trang 1, còn nội dung bị đẩy sang trang 2 (Orphan Headings) */
+    h1, h2, h3, h4, legend {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    /* ================== 6. TỐI ƯU HÓA HÌNH ẢNH MINH CHỨNG MINH BẠCH ================== */
+    /* Định dạng vùng chứa ảnh minh chứng hiện trường gọn gàng, không tràn lề */
+    img {
+        max-width: 250px !important; /* Khống chế kích thước ảnh vừa vặn khổ giấy */
+        height: auto !important;
+        border: 1px solid #000000 !important;
+        margin-top: 8px !important;
+        display: block !important;
+    }
+}
