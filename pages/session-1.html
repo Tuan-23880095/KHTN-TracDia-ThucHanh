@@ -3,173 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Buổi 1: Giới thiệu thiết bị - Hệ thống Trắc địa</title>
+    <title>Buổi 1: Giới thiệu thiết bị - Hệ thống Trắc địa số</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/components.css">
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         .gradient-header {
             background: linear-gradient(135deg, #1e40af, #0369a1);
         }
+        /* Style tab chủ động bằng biến màu core */
+        .tab-active {
+            background-color: var(--color-primary) !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
 
-    <header class="gradient-header text-white px-4 py-6 shadow-md sticky top-0 z-50">
+    <header class="gradient-header text-white px-4 py-5 shadow-md sticky top-0 z-50">
         <div class="max-w-3xl mx-auto flex items-center justify-between">
             <a href="../dashboard.html" class="inline-flex items-center text-xs font-bold bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/10 hover:bg-white/20 transition-all">
                 ⬅️ Quay lại
             </a>
             <div class="text-center flex-grow mx-4">
                 <span class="text-[10px] font-extrabold text-cyan-300 uppercase tracking-widest block">Học phần: GEO10055</span>
-                <h1 class="text-sm sm:text-base font-black tracking-tight leading-tight uppercase">
-                    Buổi 1: Giới thiệu máy Kinh vĩ & Thủy bình
+                <h1 class="text-sm sm:text-base font-black tracking-tight uppercase leading-tight">
+                    Buổi 1: Nhận diện máy Kinh vĩ & Thủy bình
                 </h1>
             </div>
             <div class="w-16"></div> </div>
     </header>
 
-    <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-6 sm:py-8 space-y-6">
+    <main class="flex-grow max-w-3xl w-full mx-auto px-4 py-6 space-y-6">
         
-        <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex gap-2">
-            <button id="tabCAnhan" class="flex-1 text-center py-3 text-xs font-black rounded-xl bg-blue-600 text-white shadow-md transition-all">
+        <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 flex gap-2">
+            <button type="button" id="tabCaNhan" class="btn flex-1 bg-gray-100 text-gray-600 !min-height-[48px] tab-active">
                 👤 FORM CÁ NHÂN
             </button>
-            <button id="tabNhom" class="flex-1 text-center py-3 text-xs font-black rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all">
+            <button type="button" id="tabNhom" class="btn flex-1 bg-gray-100 text-gray-600 !min-height-[48px]">
                 👥 FORM NHÓM
             </button>
         </div>
 
         <form id="session1Form" class="space-y-6" novalidate>
+            
             <input type="hidden" id="txtSubmitType" name="submit_type" value="Cá nhân">
-            <input type="hidden" name="session_name" value="Buổi 1">
+            <input type="hidden" id="txtSessionName" name="session_name" value="Buổi 1">
 
-            <fieldset class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                <legend class="text-xs font-extrabold text-blue-600 uppercase tracking-wider px-2">I. Thông tin định danh</legend>
+            <fieldset class="card-anti-glare space-y-4">
+                <legend class="text-xs font-extrabold text-blue-600 uppercase tracking-wider px-2 bg-gray-50">I. Thông tin định danh</legend>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label for="txtStudentId" class="text-xs font-bold text-gray-700">Mã số sinh viên (MSSV)</label>
-                        <input type="text" id="txtStudentId" name="student_id" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-500" readonly>
+                    <div class="space-y-1.5">
+                        <label for="txtStudentId" class="text-xs font-bold text-gray-600 uppercase">Mã số sinh viên (MSSV)</label>
+                        <input type="text" id="txtStudentId" name="student_id" class="input-field !bg-gray-100" readonly placeholder="Đang tải...">
                     </div>
-                    <div class="space-y-1">
-                        <label for="txtStudentName" class="text-xs font-bold text-gray-700">Họ và tên sinh viên</label>
-                        <input type="text" id="txtStudentName" name="student_name" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-500" readonly>
+                    <div class="space-y-1.5">
+                        <label for="txtStudentName" class="text-xs font-bold text-gray-600 uppercase">Họ và tên sinh viên</label>
+                        <input type="text" id="txtStudentName" name="student_name" class="input-field !bg-gray-100" readonly placeholder="Đang tải...">
                     </div>
                 </div>
-                <div class="space-y-1">
-                    <label for="txtGroupId" class="text-xs font-bold text-gray-700">Mã Nhóm thực địa</label>
-                    <input type="text" id="txtGroupId" name="group_id" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-500" readonly>
+                <div class="space-y-1.5">
+                    <label for="txtGroupId" class="text-xs font-bold text-gray-600 uppercase">Mã nhóm thực địa</label>
+                    <input type="text" id="txtGroupId" name="group_id" class="input-field !bg-gray-100" readonly placeholder="Đang tải...">
                 </div>
             </fieldset>
 
             <div id="panelCaNhan" class="space-y-6">
                 
-                <fieldset class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                    <legend class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider px-2">II. Cá nhân - Nhận diện cấu tạo máy</legend>
-                    <p class="text-xs text-gray-500 leading-relaxed">Đối chiếu sơ đồ cấu tạo máy trong giáo trình và điền tên chính xác của các bộ phận cơ bản sau:</p>
-
+                <fieldset class="card-anti-glare space-y-4 border-l-4 border-l-emerald-500">
+                    <legend class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider px-2 bg-gray-50">II. Cá nhân - Cấu tạo máy</legend>
+                    <p class="text-xs text-gray-500 italic leading-relaxed">Đối chiếu sơ đồ hình vẽ trong giáo trình thực tập để điền tên linh kiện:</p>
+                    
                     <div class="space-y-3">
                         <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-600">Bộ phận số 1 (Ngắm nhanh mục tiêu):</label>
-                            <input type="text" name="part_1" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="Đáp án của bạn">
+                            <label for="txtPart1" class="text-xs font-bold text-gray-600">Bộ phận 1 (Ống ngắm sơ bộ / Tiêu cự ngắm nhanh):</label>
+                            <input type="text" id="txtPart1" name="part_1" class="input-field" placeholder="Nhập tên bộ phận">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-600">Bộ phận số 2 (Làm rõ màng dây chữ thập):</label>
-                            <input type="text" name="part_2" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="Đáp án của bạn">
+                            <label for="txtPart2" class="text-xs font-bold text-gray-600">Bộ phận 2 (Vòng điều quang / Làm rõ màng chỉ chữ thập):</label>
+                            <input type="text" id="txtPart2" name="part_2" class="input-field" placeholder="Nhập tên bộ phận">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-600">Bộ phận số 3 (Cân bằng máy sơ bộ):</label>
-                            <input type="text" name="part_3" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="Đáp án của bạn">
+                            <label for="txtPart3" class="text-xs font-bold text-gray-600">Bộ phận 3 (Ốc vi động ngang / Tinh chỉnh mục tiêu):</label>
+                            <input type="text" id="txtPart3" name="part_3" class="input-field" placeholder="Nhập tên bộ phận">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-600">Bộ phận số 4 (Cân bằng máy chính xác):</label>
-                            <input type="text" name="part_4" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="Đáp án của bạn">
+                            <label for="txtPart4" class="text-xs font-bold text-gray-600">Bộ phận 4 (Ốc cân bằng máy / Điều chỉnh bọt thủy tròn):</label>
+                            <input type="text" id="txtPart4" name="part_4" class="input-field" placeholder="Nhập tên bộ phận">
                         </div>
                         <div class="space-y-1">
-                            <label class="text-xs font-bold text-gray-600">Bộ phận số 5 (Tinh chỉnh đưa chữ thập vào rốn mục tiêu):</label>
-                            <input type="text" name="part_5" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-emerald-500" placeholder="Đáp án của bạn">
+                            <label for="txtPart5" class="text-xs font-bold text-gray-600">Bộ phận 5 (Kính dọi tâm quang học / Ống dọi tâm laser):</label>
+                            <input type="text" id="txtPart5" name="part_5" class="input-field" placeholder="Nhập tên bộ phận">
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-100 space-y-2">
-                        <label class="text-xs font-bold text-gray-700 block">Ảnh Selfie cá nhân chỉ tay vào bộ phận máy ngẫu nhiên</label>
+                    <div class="pt-3 border-t border-gray-100 space-y-2">
+                        <label class="text-xs font-bold text-gray-700 block uppercase tracking-wide">Ảnh Selfie cá nhân thao tác bên cạnh thiết bị:</label>
                         <input type="file" id="fileIndividual" accept="image/*" capture="environment" class="block w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition-all">
                         <input type="hidden" id="txtIndividualPhotoUrl" name="individual_photo_url">
                     </div>
                 </fieldset>
 
-                <fieldset class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                    <legend class="text-xs font-extrabold text-purple-600 uppercase tracking-wider px-2">III. Cá nhân - Thực hành đọc số 3 lần</legend>
-                    <p class="text-xs text-gray-500 leading-relaxed">Xoay máy lệch đi và tiến hành ngắm bắt lại mục tiêu 3 lần để triệt tiêu sai số ngẫu nhiên:</p>
-
-                    <div class="space-y-3">
+                <fieldset class="card-anti-glare space-y-4 border-l-4 border-l-purple-500">
+                    <legend class="text-xs font-extrabold text-purple-600 uppercase tracking-wider px-2 bg-gray-50">III. Cá nhân - Thực hành đọc số 3 lần</legend>
+                    <p class="text-xs text-gray-500 italic leading-relaxed">Xoay máy lệch mục tiêu, tiến hành ngắm bắt lại và đọc trị số ngẫu nhiên 3 lần liên tiếp:</p>
+                    
+                    <div class="space-y-4">
                         <div class="space-y-1">
-                            <label for="txtReadingType" class="text-xs font-bold text-gray-600">Loại trị số đọc (Góc bằng DMS / Chỉ giữa mm)</label>
-                            <input type="text" id="txtReadingType" name="reading_type" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500" placeholder="Ví dụ: Góc bằng (nhập dạng 125.3015)" />
+                            <label for="txtReadingType" class="text-xs font-bold text-gray-600">Loại trị số thực hiện đo (Ví dụ: Chỉ giữa mia mm / Góc bằng DMS):</label>
+                            <input type="text" id="txtReadingType" name="reading_type" class="input-field" placeholder="Ví dụ: Chỉ giữa mia (mm)">
                         </div>
                         
                         <div class="grid grid-cols-3 gap-3">
                             <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Lần đo 1</label>
-                                <input type="number" id="txtVal1" name="val_1" inputmode="decimal" step="any" class="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-center focus:outline-none focus:border-purple-500">
+                                <label for="txtVal1" class="text-[10px] font-bold text-gray-500 uppercase text-center block">Lần đo 1</label>
+                                <input type="number" id="txtVal1" name="val_1" inputmode="decimal" step="any" class="input-field text-center font-black text-blue-700">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Lần đo 2</label>
-                                <input type="number" id="txtVal2" name="val_2" inputmode="decimal" step="any" class="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-center focus:outline-none focus:border-purple-500">
+                                <label for="txtVal2" class="text-[10px] font-bold text-gray-500 uppercase text-center block">Lần đo 2</label>
+                                <input type="number" id="txtVal2" name="val_2" inputmode="decimal" step="any" class="input-field text-center font-black text-blue-700">
                             </div>
                             <div class="space-y-1">
-                                <label class="text-[10px] font-bold text-gray-500 uppercase">Lần đo 3</label>
-                                <input type="number" id="txtVal3" name="val_3" inputmode="decimal" step="any" class="w-full p-3 border border-gray-200 rounded-xl text-sm font-bold text-center focus:outline-none focus:border-purple-500">
+                                <label for="txtVal3" class="text-[10px] font-bold text-gray-500 uppercase text-center block">Lần đo 3</label>
+                                <input type="number" id="txtVal3" name="val_3" inputmode="decimal" step="any" class="input-field text-center font-black text-blue-700">
                             </div>
                         </div>
 
-                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex justify-between items-center mt-2">
-                            <span class="text-xs font-bold text-purple-700 uppercase">Giá trị trung bình đo:</span>
-                            <input type="number" id="txtValAvg" name="val_avg" class="bg-transparent text-right text-base font-black text-purple-900 focus:outline-none w-32" readonly placeholder="0.00">
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex justify-between items-center">
+                            <span class="text-xs font-bold text-purple-700 uppercase tracking-wide">Giá trị trung bình đo:</span>
+                            <input type="number" id="txtValAvg" name="val_avg" class="bg-transparent text-right text-lg font-black text-purple-900 focus:outline-none w-36" readonly placeholder="0.000">
                         </div>
                     </div>
                 </fieldset>
             </div>
 
             <div id="panelNhom" class="space-y-6 hidden">
-                <fieldset class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                    <legend class="text-xs font-extrabold text-blue-600 uppercase tracking-wider px-2">II. Nhóm - Làm quen thiết bị & Ngắm tiêu</legend>
+                <fieldset class="card-anti-glare space-y-4 border-l-4 border-l-blue-500">
+                    <legend class="text-xs font-extrabold text-blue-600 uppercase tracking-wider px-2 bg-gray-50">II. Nhóm - Phân vụ thiết bị hiện trường</legend>
                     
                     <div class="space-y-3">
                         <div class="space-y-1">
-                            <label for="cmbMachineType" class="text-xs font-bold text-gray-600">Loại máy Nhóm được bàn giao</label>
-                            <select id="cmbMachineType" name="machine_type" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-white">
-                                <option value="">-- Chọn thiết bị --</option>
-                                <option value="Máy kinh vĩ điện tử">Máy kinh vĩ điện tử</option>
-                                <option value="Máy thủy bình cơ học">Máy thủy bình cơ học</option>
+                            <label for="cmbMachineType" class="text-xs font-bold text-gray-600">Loại thiết bị Nhóm được bàn giao thực địa:</label>
+                            <select id="cmbMachineType" name="machine_type" class="input-field bg-white">
+                                <option value="">-- Click để chọn máy --</option>
+                                <option value="Máy kinh vĩ điện tử DT-200">Máy kinh vĩ điện tử (Sát hạch góc)</option>
+                                <option value="Máy thủy bình tự động Nikon">Máy thủy bình cơ học (Sát hạch độ cao)</option>
                             </select>
                         </div>
                         <div class="space-y-1">
-                            <label for="txtTargetDesc" class="text-xs font-bold text-gray-600">Mô tả mục tiêu ngắm (Ví dụ: Cột cờ, góc chữ A tòa nhà...)</label>
-                            <input type="text" id="txtTargetDesc" name="target_desc" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" placeholder="Nhập đặc điểm mục tiêu">
+                            <label for="txtTargetDesc" class="text-xs font-bold text-gray-600">Vị trí mốc / Đặc điểm mục tiêu ngắm chung của Nhóm:</label>
+                            <input type="text" id="txtTargetDesc" name="target_desc" class="input-field" placeholder="Ví dụ: Góc chữ A tòa nhà B5, đỉnh cột cờ...">
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-gray-100 space-y-2">
-                        <label class="text-xs font-bold text-gray-700 block">Ảnh minh chứng toàn cảnh Nhóm đang phối hợp thao tác máy</label>
+                    <div class="pt-3 border-t border-gray-100 space-y-2">
+                        <label class="text-xs font-bold text-gray-700 block uppercase tracking-wide">Ảnh toàn cảnh trạm máy hiện trường (Có mặt đầy đủ thành viên):</label>
                         <input type="file" id="fileGroup" accept="image/*" capture="environment" class="block w-full text-xs text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-all">
                         <input type="hidden" id="txtGroupPhotoUrl" name="group_photo_url">
                     </div>
                 </fieldset>
             </div>
 
-            <fieldset class="bg-white p-5 sm:p-6 rounded-3xl shadow-sm border border-gray-100 space-y-4">
-                <div class="space-y-1">
-                    <label for="txtStudentComment" class="text-xs font-bold text-gray-700">Nhận xét của sinh viên (Khó khăn khi bắt nét, xoay máy...)</label>
-                    <textarea id="txtStudentComment" name="student_comment" rows="3" class="w-full p-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" placeholder="Ghi chú khó khăn ngoài thực địa nếu có"></textarea>
+            <fieldset class="card-anti-glare space-y-4">
+                <div class="space-y-1.5">
+                    <label for="txtStudentComment" class="text-xs font-bold text-gray-700 uppercase">Nhận xét / Khó khăn phát sinh ngoài hiện trường:</label>
+                    <textarea id="txtStudentComment" name="student_comment" rows="3" class="w-full p-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:border-blue-500" placeholder="Ví dụ: Máy bị rung do gió lớn, kính ngắm bị bụi mờ..."></textarea>
                 </div>
 
-                <div id="formErrorMessage" class="hidden p-4 bg-red-50 border border-red-200 text-red-600 text-xs font-bold rounded-xl"></div>
+                <div id="formErrorMessage" class="hidden" role="alert"></div>
 
-                <button type="submit" id="btnSubmitForm" class="w-full py-4 text-sm font-black rounded-xl text-white bg-blue-600 hover:bg-blue-700 shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                    <span id="btnSubmitText">NỘP BÁO CÁO BUỔI 1</span>
-                    <span id="btnSubmitSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <button type="submit" id="btnSubmitForm" class="btn btn-primary w-full flex items-center justify-center gap-2">
+                    <span id="btnSubmitText">NỘP BÁO CÁO SỐ LIỆU BUỔI 1</span>
+                    <span id="btnSubmitSpinner" class="spinner hidden"></span>
                 </button>
             </fieldset>
 
@@ -178,40 +191,40 @@
 
     <footer class="bg-white border-t border-gray-200 py-4 text-center mt-auto">
         <p class="text-[10px] font-medium text-gray-400">
-            &copy; 2026 Khoa Địa chất - HCMUS. Dữ liệu nộp trực tiếp về hệ thống Google Sheets.
+            &copy; 2026 Khoa Địa chất - Trường ĐH Khoa học Tự nhiên - ĐHQG HCM.
         </p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const btnCaNhan = document.getElementById('tabCAnhan');
-            const btnNhom = document.getElementById('tabNhom');
+            const tabCaNhan = document.getElementById('tabCaNhan');
+            const tabNhom = document.getElementById('tabNhom');
             const panelCaNhan = document.getElementById('panelCaNhan');
             const panelNhom = document.getElementById('panelNhom');
             const txtSubmitType = document.getElementById('txtSubmitType');
 
-            // Logic chuyển sang Tab Nhóm
-            btnNhom.addEventListener('click', () => {
+            tabNhom.addEventListener('click', () => {
                 txtSubmitType.value = "Nhóm";
-                btnNhom.className = "flex-1 text-center py-3 text-xs font-black rounded-xl bg-blue-600 text-white shadow-md transition-all";
-                btnCaNhan.className = "flex-1 text-center py-3 text-xs font-black rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all";
+                tabNhom.classList.add('tab-active');
+                tabCaNhan.classList.remove('tab-active');
                 panelNhom.classList.remove('hidden');
                 panelCaNhan.classList.add('hidden');
             });
 
-            // Logic chuyển sang Tab Cá Nhân
-            btnCaNhan.addEventListener('click', () => {
+            tabCaNhan.addEventListener('click', () => {
                 txtSubmitType.value = "Cá nhân";
-                btnCaNhan.className = "flex-1 text-center py-3 text-xs font-black rounded-xl bg-blue-600 text-white shadow-md transition-all";
-                btnNhom.className = "flex-1 text-center py-3 text-xs font-black rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all";
+                tabCaNhan.classList.add('tab-active');
+                tabNhom.classList.remove('tab-active');
                 panelCaNhan.classList.remove('hidden');
                 panelNhom.classList.add('hidden');
             });
         });
     </script>
 
-    <script type="module" src="../js/core/APIConnector.js"></script>
-    <script type="module" src="../js/core/FirebaseConfig.js"></script>
+    <script type="module">
+        import userAuthInstance from '../js/core/UserAuth.js';
+        userAuthInstance.requireAuth(); // Middleware chặn và bảo vệ form nếu chưa đăng nhập
+    </script>
     <script type="module" src="../js/controllers/sessionCtrl.js"></script>
 
 </body>
