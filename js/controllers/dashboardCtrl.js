@@ -107,7 +107,7 @@ async function renderStudentDashboard(container, studentId) {
  * HÀM SINH MÃ HTML CHO TỪNG THẺ (Card Generator)
  * Trả về chuỗi Template Literal đã cấy biến
  */
-function generateSessionCard(session, isCompleted) {
+function generateSessionCard(session, isCompleted, studentId) {
     // Nếu là Buổi thi (Buổi 9)
     if (session.isExam) {
         return `
@@ -142,8 +142,10 @@ function generateSessionCard(session, isCompleted) {
             </div>
             <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-between gap-2">
                 <div class="text-emerald-600 text-xs font-extrabold">✅ ĐẠT CHUẨN</div>
-                <a href="${session.url}?mode=view" class="px-4 py-2 text-xs font-black rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all border border-emerald-200">
-                    Xem báo cáo
+                
+                <a href="pages/report-template.html?session=${encodeURIComponent(session.name)}&studentId=${studentId}" 
+                   class="px-4 py-2 text-xs font-black rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all border border-emerald-200 flex items-center gap-1">
+                    🖨️ Xuất PDF
                 </a>
             </div>
         </div>`;
