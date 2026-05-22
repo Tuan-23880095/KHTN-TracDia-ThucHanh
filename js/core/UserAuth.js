@@ -88,7 +88,7 @@ class UserAuth {
     requireAuth() {
         if (!this.isLoggedIn()) {
             alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
-            window.location.replace('../index.html');
+            window.location.replace('index.html');
             return false;
         }
         return true;
