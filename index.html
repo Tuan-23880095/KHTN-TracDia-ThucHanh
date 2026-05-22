@@ -3,88 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Đăng nhập - Hệ thống Thực hành Trắc địa</title>
-
+    <title>Đăng nhập Hệ thống Thực hành Trắc địa | HCMUS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
-    
-    </head>
-<body class="bg-light">
 
-    <main class="login-container">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-text {
+            background: linear-gradient(to right, #2563eb, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8">
+
+    <main class="max-w-md w-full space-y-8 bg-white p-6 sm:p-10 rounded-3xl shadow-xl border border-gray-100 transition-all hover:shadow-2xl card-anti-glare">
         
-        <header class="space-y-6 text-center py-8 px-4 w-full">
-            
-            <div class="flex items-center justify-center gap-4 sm:gap-6">
+        <header class="space-y-4 text-center">
+            <div class="flex items-center justify-center gap-3 sm:gap-4">
                 
-                <div class="h-12 sm:h-16 flex-shrink-0">
-                    <img src="assets/img/logo-hcmus.png" 
-                         alt="Logo Đại học Khoa học Tự nhiên" 
-                         class="h-full w-auto object-contain">
+                <div class="h-10 sm:h-12 flex-shrink-0">
+                    <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Logo-HCMUS-300x246.jpg" 
+                         alt="Logo ĐH KHTN" 
+                         class="h-full w-auto object-contain"
+                         onerror="this.src='assets/img/logo-hcmus.png'">
                 </div>
         
-                <div class="flex flex-col justify-center space-y-1">
-                    <h2 class="text-xs sm:text-base font-bold text-blue-800 tracking-widest uppercase leading-tight m-0">
-                        Đại học Khoa học Tự nhiên - ĐHQG HCM
+                <div class="flex flex-col justify-center text-left">
+                    <h2 class="text-[10px] sm:text-xs font-bold text-blue-600 tracking-wider uppercase leading-tight m-0">
+                        ĐH Khoa học Tự nhiên - ĐHQG HCM
                     </h2>
-                    <h2 class="text-sm sm:text-lg font-extrabold text-blue-600 tracking-widest uppercase leading-tight m-0">
+                    <h2 class="text-xs sm:text-sm font-extrabold text-blue-800 tracking-wide uppercase leading-tight m-0">
                         Khoa Địa Chất
                     </h2>
                 </div>
         
-                <div class="h-12 sm:h-16 flex-shrink-0">
-                    <img src="assets/img/logo-geology.png" 
+                <div class="h-10 sm:h-12 flex-shrink-0">
+                    <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Geology-50PNG-300x300.png" 
                          alt="Logo Khoa Địa chất" 
-                         class="h-full w-auto object-contain">
+                         class="h-full w-auto object-contain"
+                         onerror="this.src='assets/img/logo-geology.png'">
                 </div>
             </div>
         
-            <div class="space-y-4 pt-4">
-                <h1 class="text-3xl sm:text-5xl font-extrabold text-gray-900 tracking-tight">
-                    Hệ Thống Thực Hành <span class="gradient-text">Trắc Địa</span>
+            <div class="space-y-1 pt-2">
+                <h1 class="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+                    Đăng Nhập <span class="gradient-text">Trắc Địa Số</span>
                 </h1>
-                <h3 class="text-sm font-bold text-gray-500 tracking-widest uppercase">
-                    Học phần: GEO10055
-                </h3>
+                <p class="text-xs text-gray-400 font-medium">Học phần: GEO10055 - Trắc địa đại cương</p>
             </div>
         </header>
 
-        <section class="login-box">
-            <form id="loginForm" novalidate>
-                
-                <div id="authErrorMessage" class="alert-error hidden" role="alert">
-                    </div>
+        <form id="loginForm" class="space-y-5" novalidate>
+            
+            <div id="authErrorMessage" class="hidden" role="alert"></div>
 
-                <div class="form-group">
-                    <label for="txtUserId">Mã số sinh viên (MSSV) / Giảng viên</label>
-                    <input type="text" id="txtUserId" name="user_id" class="input-large" 
-                           placeholder="Nhập MSSV của bạn" inputmode="numeric" required>
+            <div class="space-y-1.5">
+                <label for="txtUserId" class="text-xs font-extrabold text-gray-700 uppercase tracking-wider block">
+                    Mã số định danh (MSSV / Mã GV)
+                </label>
+                <input type="text" id="txtUserId" name="user_id" 
+                       class="input-field" 
+                       placeholder="Ví dụ: 22110001" 
+                       inputmode="numeric" required>
+            </div>
+
+            <div class="space-y-1.5">
+                <div class="flex justify-between items-center">
+                    <label for="txtPassword" class="text-xs font-extrabold text-gray-700 uppercase tracking-wider block">
+                        Mật khẩu hệ thống
+                    </label>
+                    <a href="pages/forgot-password.html" class="text-xs font-bold text-blue-600 hover:underline">
+                        Quên mật khẩu?
+                    </a>
                 </div>
+                <input type="password" id="txtPassword" name="password" 
+                       class="input-field" 
+                       placeholder="Nhập mật khẩu của bạn" required>
+            </div>
 
-                <div class="form-group">
-                    <label for="txtPassword">Mật khẩu</label>
-                    <input type="password" id="txtPassword" name="password" class="input-large" 
-                           placeholder="Nhập mật khẩu" required>
-                </div>
+            <div class="pt-2">
+                <button type="submit" id="btnLogin" class="btn btn-primary w-full flex items-center justify-center gap-2">
+                    <span>ĐĂNG NHẬP HỆ THỐNG</span>
+                    <span id="btnLoginSpinner" class="spinner hidden"></span>
+                </button>
+            </div>
+        </form>
 
-                <div class="form-actions">
-                    <button type="submit" id="btnLogin" class="btn-primary btn-block btn-large">
-                        <span id="btnLoginText">ĐĂNG NHẬP HỆ THỐNG</span>
-                        <span id="btnLoginSpinner" class="loader hidden"></span>
-                    </button>
-                </div>
-                
-            </form>
-        </section>
-
-        <footer class="login-footer">
-            <p>Hệ thống Hỗ trợ Thực địa v1.0 &copy; 2025</p>
-        </footer>
+        <p class="text-center text-xs text-gray-500 font-medium">
+            Chưa có tài khoản thực địa? 
+            <a href="register.html" class="text-blue-600 font-bold hover:underline">Đăng ký ngay tại đây</a>
+        </p>
 
     </main>
+    
+    <footer class="mt-8 text-center px-4">
+        <p class="text-xs font-medium text-gray-400 leading-relaxed">
+            &copy; Người phát triển web: ThS. Đinh Quốc Tuấn <br>
+            Mục đích giáo dục, phi lợi nhuận <br>
+            2026 Khoa Địa chất - HCMUS.
+        </p>
+    </footer>
 
-    <script type="module" src="js/core/APIConnector.js"></script>
-    <script type="module" src="js/core/UserAuth.js"></script>
+    <script type="module">
+        import userAuthInstance from './js/core/UserAuth.js';
+        if (userAuthInstance.isLoggedIn()) {
+            window.location.replace('dashboard.html');
+        }
+    </script>
     <script type="module" src="js/controllers/authCtrl.js"></script>
 
 </body>
