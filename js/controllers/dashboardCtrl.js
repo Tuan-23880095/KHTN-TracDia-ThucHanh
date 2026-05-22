@@ -66,8 +66,11 @@ const COURSE_SESSIONS = [
     { id: 1, name: "Buổi 1", title: "Giới thiệu Kinh vĩ & Thủy bình", desc: "Nhận diện máy, làm quen ống điều quang và vi động.", url: "pages/session-1.html", isExam: false },
     { id: 2, name: "Buổi 2", title: "Thao tác cân bằng máy", desc: "Định tâm quang học, cân bọt thủy dài/tròn dưới áp lực thời gian.", url: "pages/session-2.html", isExam: false },
     { id: 3, name: "Buổi 3", title: "Đo góc bằng (Kinh vĩ)", desc: "Đo thuận/đảo kính, tính toán sai số 2C thực tế.", url: "pages/session-3.html", isExam: false },
-    // ... Thêm các buổi 4-8 vào đây theo giáo trình ...
+    { id: 4, name: "Buổi 4", title: "Đo độ cao bằng (Thủy bình)", desc: "Đo độ cao bằng thủy bình, tính toán sai số 2C thực tế.", url: "pages/session-4.html", isExam: false },
+    { id: 5, name: "Buổi 5", title: "Đo khoảng cách bằng (Kính vi)", desc: "Đo khoảng cách bằng kính vi, tính toán sai số 2C thực tế.", url: "pages/session-5.html", isExam: false },
+    { id: 6, name: "Buổi 6", title: "Đo độ dài bằng (Thủy bình)", desc: "Đo độ dài bằng thủy bình, tính toán sai số 2C thực tế.", url: "pages/session-6.html", isExam: false },
     { id: 7, name: "Buổi 7", title: "Dẫn chuyền cao độ tuyến kín", desc: "Lập sổ đo cao hình học vòng khép kín trạm A-B-C-A.", url: "pages/session-7.html", isExam: false },
+    { id: 8, name: "Buổi 8", title: "Thao tác đo độ cao", desc: "Thao tác đo độ cao, tính toán sai số 2C thực tế.", url: "pages/session-8.html", isExam: false },
     { id: 9, name: "Buổi 9", title: "Thi Thực Hành Tổng Hợp", desc: "Bốc đề random, sát hạch kỹ năng thao tác dưới áp lực thời gian.", url: "pages/session-9.html", isExam: true }
 ];
 
