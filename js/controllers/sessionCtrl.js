@@ -121,10 +121,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const apiResult = await apiConnectorInstance.postSubmission(submissionObj, measurementsArray);
 
             if (apiResult.success) {
-                showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Số liệu đã được lưu trữ vĩnh viễn trên hệ thống.', 'success');
-                // Khóa form hoàn toàn, tạo độ trễ 1.5s rồi điều hướng về Dashboard
+                showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
+                
+                // Lấy tên buổi học hiện tại (VD: "Buổi 1")
+                const currentSessionName = getInputValue('txtSessionName', 'string');
+                
                 setTimeout(() => {
-                    window.location.replace('../dashboard.html');
+                    // ĐIỀU HƯỚNG THẲNG SANG TRANG TEMPLATE A4 CÙNG VỚI DATA TRUYỀN THEO
+                    window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSessionName)}&studentId=${user.user_id}`);
                 }, 1500);
             } else {
                 throw new Error(apiResult.message || "Lỗi không xác định từ phía Google Sheets.");
