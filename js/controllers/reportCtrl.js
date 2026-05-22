@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (!response || response.status !== "success" || !response.found) {
             alert(`🚨 Hệ thống thông báo: Không tìm thấy số liệu hoàn công của tài khoản [${targetMssv}] tại Buổi ${sessionNum}. Hoặc phiên làm việc chưa từng được nộp thành công!`);
-            window.location.href = "dashboard.html";
+            window.location.href = "../dashboard.html";
             return;
         }
 
