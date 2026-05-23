@@ -1,196 +1,218 @@
 /**
  * ====================================================================
- * TRÌNH ĐIỀU KHIỂN BẢNG ĐIỀU KHIỂN (DASHBOARD CONTROLLER)
+ * TRÌNH ĐIỀU KHIỂN TRUNG TÂM (DASHBOARD CONTROLLER CORE)
  * Vị trí: js/controllers/dashboardCtrl.js
- * Nhiệm vụ: Đổ dữ liệu định danh, phân quyền giao diện (Giảng viên/Sinh viên), 
- * hiển thị danh sách buổi học động.
- * Áp dụng: MVC, Dynamic DOM Rendering, Role-based Access Control (RBAC)
+ * Nhiệm vụ: Quét quyền (RBAC), gọi API kéo dữ liệu tiến độ thực tế,
+ * rẽ nhánh render Card (Student/Leader) hoặc lập Ma trận Màu (Teacher).
  * ====================================================================
  */
 
-// 1. Nhập khẩu các lớp Lõi (Core)
 import userAuthInstance from '../core/UserAuth.js';
 import apiConnectorInstance from '../core/APIConnector.js';
 
-// Khởi chạy khi DOM đã load hoàn chỉnh
+// CƠ SỞ DỮ LIỆU DANH MỤC 9 BUỔI THỰC TẬP CỐ ĐỊNH
+const COURSE_SESSIONS = [
+    { id: 1, name: "Buổi 1", title: "Giới thiệu Kinh vĩ & Thủy bình", desc: "Nhận diện cấu tạo máy, thao tác vi động." },
+    { id: 2, name: "Buổi 2", title: "Thao tác cân bằng thiết bị", desc: "Định tâm quang học, cân bọt thủy tròn/dài." },
+    { id: 3, name: "Buổi 3", title: "Đo góc bằng (Kinh vĩ)", desc: "Phương pháp đo đơn, đo thuận/đảo kính tính 2C." },
+    { id: 4, name: "Buổi 4", title: "Đo góc đứng & Tỷ chuẩn", desc: "Xác định góc đứng, tính chỉ số MO bàn độ đứng." },
+    { id: 5, name: "Buổi 5", title: "Đo khoảng cách quang học", desc: "Đọc chỉ số lượng cự trên mia, tính khoảng cách trạm." },
+    { id: 6, name: "Buổi 6", title: "Đo cao hình học từ giữa", desc: "Thao tác trạm máy thủy bình đọc mia sau/trước." },
+    { id: 7, name: "Buổi 7", title: "Dẫn chuyền cao độ tuyến kín", desc: "Phối hợp lập sổ đo vòng khép kín trạm ngoại vi." },
+    { id: 8, name: "Buổi 8", title: "Đo vẽ chi tiết bản đồ", desc: "Phối hợp đo tọa độ điểm chi tiết phục vụ địa chất." },
+    { id: 9, name: "Buổi 9", title: "Thi Thực Hành Tổng Hợp", desc: "Sát hạch kỹ năng thao tác máy dưới áp lực đồng hồ." }
+];
+
 document.addEventListener('DOMContentLoaded', async () => {
-    
-    // BƯỚC 1: XÁC THỰC LẠI BẢO MẬT (Phòng hờ)
+    // 1. Chặn bảo vệ tuyến đường
     if (!userAuthInstance.requireAuth()) return;
-
-    // Lấy cục dữ liệu User đã được đóng gói từ lúc Đăng nhập
-    const currentUser = userAuthInstance.getUser();
-
-    // BƯỚC 2: RÁP DỮ LIỆU CÁ NHÂN HÓA LÊN BANNER (Data Binding)
-    document.getElementById('lblHeaderUserName').textContent = currentUser.full_name || currentUser.user_id;
-    document.getElementById('lblBannerName').textContent = currentUser.full_name || currentUser.user_id;
-    document.getElementById('lblBannerId').textContent = currentUser.user_id;
     
-    // Định dạng chức danh
-    const roleText = currentUser.role === 'teacher' ? 'Giảng viên' : (currentUser.role === 'leader' ? 'Nhóm trưởng' : 'Sinh viên');
-    document.getElementById('lblHeaderUserRole').textContent = roleText;
+    const user = userAuthInstance.getUser();
     
-    // Nhóm thực địa (Nếu là GV thì để trống)
-    document.getElementById('lblBannerGroup').textContent = currentUser.group_id || 'N/A';
+    // 2. Điền thông tin định danh Navbar
+    document.getElementById('lblHeaderUserName').textContent = user.full_name || user.user_id;
+    const roleTexts = { teacher: 'Giảng viên', leader: 'Nhóm trưởng', student: 'Sinh viên' };
+    document.getElementById('lblHeaderUserRole').textContent = roleTexts[user.role] || 'Sinh viên';
 
-    // BƯỚC 3: XỬ LÝ SỰ KIỆN ĐĂNG XUẤT
-    const btnLogout = document.getElementById('btnLogout');
-    if (btnLogout) {
-        btnLogout.addEventListener('click', () => {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống thực địa?')) {
-                userAuthInstance.logout();
-            }
-        });
-    }
+    // Xử lý nút Đăng xuất
+    document.getElementById('btnLogout').addEventListener('click', () => {
+        if (confirm('Bạn muốn đăng xuất khỏi hệ thống thực địa?')) userAuthInstance.logout();
+    });
 
-    // BƯỚC 4: RENDER GIAO DIỆN THEO QUYỀN (ROLE-BASED UI)
-    const gridContainer = document.getElementById('sessionGridContainer');
-    
-    if (currentUser.role === 'teacher') {
-        // UI DÀNH RIÊNG CHO GIẢNG VIÊN
-        renderTeacherDashboard(gridContainer);
+    // 3. ĐIỀU HƯỚNG QUYỀN TRUY CẬP (ROLE-BASED STRUCTURAL ROUTING)
+    if (user.role === 'teacher') {
+        document.getElementById('sectionTeacherView').classList.remove('hidden');
+        await initTeacherDashboard();
     } else {
-        // UI DÀNH CHO SINH VIÊN / NHÓM TRƯỞNG
-        await renderStudentDashboard(gridContainer, currentUser.user_id);
+        document.getElementById('sectionStudentView').classList.remove('hidden');
+        // Ráp text Banner cho SV
+        document.getElementById('lblBannerName').textContent = user.full_name || user.user_id;
+        document.getElementById('lblBannerId').textContent = user.user_id;
+        document.getElementById('lblBannerGroup').textContent = user.group_id || 'N/A';
+        await initStudentDashboard(user);
     }
 });
 
 /**
  * ============================================================================
- * CÁC HÀM RENDER (RENDER FUNCTIONS)
+ * LUỒNG NGHIỆP VỤ KIỂU 1: RENDER CARD CHO SINH VIÊN / NHÓM TRƯỞNG
  * ============================================================================
  */
-
-// MẢNG DỮ LIỆU TĨNH CHỨA LỘ TRÌNH 9 BUỔI (Data Dictionary)
-const COURSE_SESSIONS = [
-    { id: 1, name: "Buổi 1", title: "Giới thiệu Kinh vĩ & Thủy bình", desc: "Nhận diện máy, làm quen ống điều quang và vi động.", url: "pages/session-1.html", isExam: false },
-    { id: 2, name: "Buổi 2", title: "Thao tác cân bằng máy", desc: "Định tâm quang học, cân bọt thủy dài/tròn dưới áp lực thời gian.", url: "pages/session-2.html", isExam: false },
-    { id: 3, name: "Buổi 3", title: "Đo góc bằng (Kinh vĩ)", desc: "Đo thuận/đảo kính, tính toán sai số 2C thực tế.", url: "pages/session-3.html", isExam: false },
-    { id: 4, name: "Buổi 4", title: "Đo độ cao bằng (Thủy bình)", desc: "Đo độ cao bằng thủy bình, tính toán sai số 2C thực tế.", url: "pages/session-4.html", isExam: false },
-    { id: 5, name: "Buổi 5", title: "Đo khoảng cách bằng (Kính vi)", desc: "Đo khoảng cách bằng kính vi, tính toán sai số 2C thực tế.", url: "pages/session-5.html", isExam: false },
-    { id: 6, name: "Buổi 6", title: "Đo độ dài bằng (Thủy bình)", desc: "Đo độ dài bằng thủy bình, tính toán sai số 2C thực tế.", url: "pages/session-6.html", isExam: false },
-    { id: 7, name: "Buổi 7", title: "Dẫn chuyền cao độ tuyến kín", desc: "Lập sổ đo cao hình học vòng khép kín trạm A-B-C-A.", url: "pages/session-7.html", isExam: false },
-    { id: 8, name: "Buổi 8", title: "Thao tác đo độ cao", desc: "Thao tác đo độ cao, tính toán sai số 2C thực tế.", url: "pages/session-8.html", isExam: false },
-    { id: 9, name: "Buổi 9", title: "Thi Thực Hành Tổng Hợp", desc: "Bốc đề random, sát hạch kỹ năng thao tác dưới áp lực thời gian.", url: "pages/session-9.html", isExam: true }
-];
-
-/**
- * RENDER GIAO DIỆN CHO SINH VIÊN
- */
-async function renderStudentDashboard(container, studentId) {
-    // 1. Tạm thời hiển thị loading cho Grid
-    container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 font-bold animate-pulse">Đang tải tiến độ thực tập từ hệ thống...</div>`;
+async function initStudentDashboard(user) {
+    const gridContainer = document.getElementById('sessionGridContainer');
+    gridContainer.innerHTML = `<div class="col-span-full text-center py-6 font-bold animate-pulse text-gray-400">Đang kiểm tra dữ liệu nộp bài trên Google Sheets...</div>`;
 
     try {
-        // 2. Fetch tiến độ từ Backend (Mock data trước, bạn sẽ thay bằng API lấy từ Google Sheets)
-        // const progressResponse = await apiConnectorInstance.getFetch(`getProgress&userId=${studentId}`);
-        // Giả lập dữ liệu trả về từ server: Sinh viên đã làm Buổi 1 và Buổi 2
-        const completedSessions = [1, 2]; 
-
-        // Cập nhật thẻ đếm tiến độ trên Banner
-        document.getElementById('lblProgressCount').textContent = completedSessions.length;
-
-        // 3. Quét vòng lặp đổ dữ liệu (Xóa rỗng grid trước khi đổ)
-        container.innerHTML = '';
+        // Gọi API kéo danh sách lịch sử nộp bài sạch từ Google Sheets về
+        const response = await apiConnectorInstance.getFetch(`getStudentProgress&studentId=${user.user_id}&groupId=${user.group_id}`);
         
+        // Cấu trúc data mong đợi từ Server: { individualLog: ["Buổi 1", "Buổi 2"], groupLog: ["Buổi 1"] }
+        const progress = response.success ? response.data : { individualLog: [], groupLog: [] };
+        
+        document.getElementById('lblProgressCount').textContent = progress.individualLog.length;
+        gridContainer.innerHTML = ''; // Dọn sạch khay
+
+        // Duyệt qua lộ trình 9 buổi học để nặn nút bấm theo thuật toán của bạn
         COURSE_SESSIONS.forEach(session => {
-            const isCompleted = completedSessions.includes(session.id);
-            // Truyền thêm biến studentId vào để cấy vào link PDF
-            const cardHTML = generateSessionCard(session, isCompleted, studentId); 
-            container.insertAdjacentHTML('beforeend', cardHTML);
+            const hasIndividualData = progress.individualLog.includes(session.name);
+            const hasGroupData = progress.groupLog.includes(session.name);
+
+            let actionButtonsHTML = '';
+
+            // ---- NHÁNH RẼ CHÍNH 1: TÀI KHOẢN LÀ SINH VIÊN THƯỜNG (STUDENT) ----
+            if (user.role === 'student') {
+                if (!hasIndividualData) {
+                    // Nếu chưa có bài cá nhân: Mở nút Làm bài cá nhân, Khóa cứng nút làm bài nhóm
+                    actionButtonsHTML = `
+                        <a href="pages/session-${session.id}.html" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-3 px-2 rounded-xl shadow uppercase tracking-wide">
+                            📝 Xem bài cá nhân
+                        </a>
+                        <button class="flex-1 bg-gray-200 text-gray-400 text-xs font-black py-3 px-2 rounded-xl uppercase tracking-wide cursor-not-allowed" disabled title="Chức năng nộp bài nhóm bị khóa do chưa hoàn thành phần cá nhân">
+                            🔒 Xem bài nhóm
+                        </button>
+                    `;
+                } else {
+                    // Nếu đã có bài cá nhân: Biến đổi thành nút Xuất Báo Cáo ngay lập tức
+                    actionButtonsHTML = `
+                        <a href="pages/report-template.html?session=${encodeURIComponent(session.name)}&studentId=${user.user_id}" class="w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-3 px-4 rounded-xl shadow uppercase tracking-wider flex items-center justify-center gap-1">
+                            🖨️ Xuất báo cáo cá nhân
+                        </a>
+                    `;
+                }
+            } 
+            // ---- NHÁNH RẼ CHÍNH 2: TÀI KHOẢN LÀ NHÓM TRƯỞNG (LEADER) ----
+            else if (user.role === 'leader') {
+                // Xử lý nút số 1: Khối Cá nhân
+                let btnIndivHTML = !hasIndividualData
+                    ? `<a href="pages/session-${session.id}.html" class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black py-3 px-1 rounded-xl shadow uppercase">📝 Xem bài cá nhân</a>`
+                    : `<a href="pages/report-template.html?session=${encodeURIComponent(session.name)}&studentId=${user.user_id}" class="flex-1 text-center bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-black py-3 px-1 rounded-xl shadow uppercase">🖨️ BC cá nhân</a>`;
+
+                // Xử lý nút số 2: Khối Nhóm
+                let btnGroupHTML = !hasGroupData
+                    ? `<a href="pages/session-${session.id}.html?tab=group" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-black py-3 px-1 rounded-xl shadow uppercase">👥 Xem bài nhóm</a>`
+                    : `<a href="pages/report-template.html?session=${encodeURIComponent(session.name)}&groupId=${user.group_id}" class="flex-1 text-center bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-black py-3 px-1 rounded-xl shadow uppercase">🖨️ BC Nhóm</a>`;
+
+                actionButtonsHTML = `<div class="flex gap-2 w-full">${btnIndivHTML}${btnGroupHTML}</div>`;
+            }
+
+            // Bơm ngược khối hộp Card hoàn chỉnh vào Grid
+            const cardHTML = `
+                <div class="card-anti-glare flex flex-col justify-between hover:shadow-md border border-gray-150 transition-all">
+                    <div class="space-y-2">
+                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest block">${session.name}</span>
+                        <h3 class="text-sm font-black text-gray-900 leading-snug">${session.title}</h3>
+                        <p class="text-xs text-gray-500 font-medium">${session.desc}</p>
+                    </div>
+                    <div class="pt-4 border-t border-gray-100 mt-4 flex items-center gap-2">
+                        ${actionButtonsHTML}
+                    </div>
+                </div>
+            `;
+            gridContainer.insertAdjacentHTML('beforeend', cardHTML);
         });
 
     } catch (error) {
-        console.error("Lỗi khi tải tiến độ:", error);
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-red-500 font-bold">Lỗi mạng lưới: Không thể tải tiến độ. Hãy thử F5 lại trang!</div>`;
+        gridContainer.innerHTML = `<div class="col-span-full text-center py-6 text-red-500 font-bold">Lỗi truy xuất tiến độ CSDL: ${error.message}</div>`;
     }
 }
 
 /**
- * HÀM SINH MÃ HTML CHO TỪNG THẺ (Card Generator)
- * Trả về chuỗi Template Literal đã cấy biến
+ * ============================================================================
+ * LUỒNG NGHIỆP VỤ KIỂU 2: RENDER HAI MA TRẬN MÀU CHO GIẢNG VIÊN (TEACHER VIEW)
+ * ============================================================================
  */
-function generateSessionCard(session, isCompleted, studentId) {
-    // Nếu là Buổi thi (Buổi 9)
-    if (session.isExam) {
-        return `
-        <div class="card-anti-glare !bg-amber-50 border-2 border-amber-400 flex flex-col justify-between hover:shadow-md transition-all relative overflow-hidden">
-            <div class="absolute top-0 right-0 bg-amber-500 text-white px-3 py-1 text-[9px] font-black uppercase rounded-bl-xl tracking-wider animate-pulse">
-                Sát Hạch
-            </div>
-            <div class="space-y-2 pr-12">
-                <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest block">${session.name}</span>
-                <h3 class="text-sm font-black text-amber-900 leading-snug">${session.title}</h3>
-                <p class="text-xs text-amber-800 font-medium">${session.desc}</p>
-            </div>
-            <div class="pt-4 border-t border-amber-200 mt-4 flex items-center justify-end">
-                <a href="${session.url}" class="w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-black text-xs py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-wider">
-                    Bắt đầu thi
-                </a>
-            </div>
-        </div>`;
-    }
+async function initTeacherDashboard() {
+    const tblIndivBody = document.getElementById('tblIndividualMatrixBody');
+    const tblGroupBody = document.getElementById('tblGroupMatrixBody');
+    
+    tblIndivBody.innerHTML = `<tr><td colspan="11" class="p-4 text-gray-400 italic">Đang đồng bộ ma trận lớp học...</td></tr>`;
 
-    // Nếu là Buổi đã hoàn thành (Màu xanh)
-    if (isCompleted) {
-        return `
-        <div class="card-anti-glare border-2 border-emerald-500 flex flex-col justify-between hover:shadow-md transition-all relative overflow-hidden">
-            <div class="absolute top-0 right-0 bg-emerald-500 text-white px-3 py-1 text-[9px] font-black uppercase rounded-bl-xl tracking-wider">
-                Đã nộp bài
-            </div>
-            <div class="space-y-2 pr-16">
-                <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">${session.name}</span>
-                <h3 class="text-sm font-black text-gray-900 leading-snug">${session.title}</h3>
-                <p class="text-xs text-gray-500 font-medium">${session.desc}</p>
-            </div>
-            <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-between gap-2">
-                <div class="text-emerald-600 text-xs font-extrabold">✅ ĐẠT CHUẨN</div>
+    try {
+        // Gọi API quét toàn bộ kho dữ liệu lớn từ Server
+        const response = await apiConnectorInstance.getFetch('getTeacherMatrixSummary');
+        if (!response.success) throw new Error(response.message);
+
+        const serverData = response.data; 
+        /* Cấu trúc nhận về mong đợi:
+           {
+              stats: { currentStudentDone: 120, totalStudent: 180, currentGroupDone: 6, totalGroup: 8 },
+              individualMatrix: [ { student_id: "24270001", full_name: "Nguyễn Văn A", logs: {"Buổi 1": true, "Buổi 2": false...} } ],
+              groupMatrix: [ { group_id: "N01", logs: {"Buổi 1": true, "Buổi 2": true...} } ]
+           }
+        */
+
+        // 1. Gắn số liệu tổng quan lên thẻ thống kê
+        document.getElementById('lblStatsStudent').textContent = `${serverData.stats.currentStudentDone} / ${serverData.stats.totalStudent}`;
+        document.getElementById('lblStatsGroup').textContent = `${serverData.stats.currentGroupDone} / ${serverData.stats.totalGroup}`;
+
+        // 2. ĐỔ DỮ LIỆU MA TRẬN 1: BÀI CÁ NHÂN SINH VIÊN
+        tblIndivBody.innerHTML = '';
+        serverData.individualMatrix.forEach(row => {
+            let cellsHTML = '';
+            
+            // Chạy vòng lặp kiểm tra trạng thái màu xanh/đỏ cho 9 buổi học
+            COURSE_SESSIONS.forEach(session => {
+                const hasData = row.logs[session.name] === true;
                 
-                <a href="pages/report-template.html?session=${encodeURIComponent(session.name)}&studentId=${studentId}" 
-                   class="px-4 py-2 text-xs font-black rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all border border-emerald-200 flex items-center gap-1">
-                    🖨️ Xuất PDF
-                </a>
-            </div>
-        </div>`;
+                // Thuật toán: Nếu xanh (có số liệu) -> Cho phép bấm click ăn link URL điều hướng, nếu đỏ -> Hiện chữ X tĩnh
+                cellsHTML += hasData 
+                    ? `<td class="border p-1 bg-emerald-500 text-white font-bold cursor-pointer matrix-cell" onclick="window.location.href='pages/report-template.html?session=${encodeURIComponent(session.name)}&studentId=${row.student_id}'" title="Click để xem bài nộp ${session.name}">Đạt</td>`
+                    : `<td class="border p-1 bg-red-100 text-red-400 font-normal select-none">✕</td>`;
+            });
+
+            const rowHTML = `
+                <tr class="hover:bg-gray-50 border-b">
+                    <td class="p-3 border font-mono text-left">${row.student_id}</td>
+                    <td class="p-3 border text-left font-bold text-blue-900">${row.full_name}</td>
+                    ${cellsHTML}
+                </tr>
+            `;
+            tblIndivBody.insertAdjacentHTML('beforeend', rowHTML);
+        });
+
+        // 3. ĐỔ DỮ LIỆU MA TRẬN 2: BÀI NHÓM TỔ ĐỘI
+        tblGroupBody.innerHTML = '';
+        serverData.groupMatrix.forEach(row => {
+            let cellsHTML = '';
+            
+            COURSE_SESSIONS.forEach(session => {
+                const hasData = row.logs[session.name] === true;
+                
+                cellsHTML += hasData 
+                    ? `<td class="border p-1 bg-teal-500 text-white font-bold cursor-pointer matrix-cell" onclick="window.location.href='pages/report-template.html?session=${encodeURIComponent(session.name)}&groupId=${row.group_id}'" title="Click xem báo cáo nhóm ${session.name}">Đạt</td>`
+                    : `<td class="border p-1 bg-red-100 text-red-400 font-normal select-none">✕</td>`;
+            });
+
+            const rowHTML = `
+                <tr class="hover:bg-gray-50 border-b">
+                    <td class="p-3 border text-left font-bold text-indigo-900">Nhóm tổ đội: ${row.group_id}</td>
+                    ${cellsHTML}
+                </tr>
+            `;
+            tblGroupBody.insertAdjacentHTML('beforeend', rowHTML);
+        });
+
+    } catch (error) {
+        tblIndivBody.innerHTML = `<tr><td colspan="11" class="p-4 text-red-500 font-bold">Lỗi không thể nạp ma trận tổng quan: ${error.message}</td></tr>`;
     }
-
-    // Nếu là Buổi chưa làm (Màu trắng viền xanh)
-    return `
-    <div class="card-anti-glare flex flex-col justify-between hover:border-blue-400 hover:shadow-md transition-all">
-        <div class="space-y-2">
-            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest block">${session.name}</span>
-            <h3 class="text-sm font-black text-gray-900 leading-snug">${session.title}</h3>
-            <p class="text-xs text-gray-500 font-medium">${session.desc}</p>
-        </div>
-        <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-end">
-            <a href="${session.url}" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-wider">
-                Vào thực hành
-            </a>
-        </div>
-    </div>`;
-}
-
-/**
- * RENDER GIAO DIỆN DÀNH RIÊNG CHO GIẢNG VIÊN (Admin Panel)
- */
-function renderTeacherDashboard(container) {
-    // Ẩn thanh đo tiến độ cá nhân vì GV không đi thực tập
-    const progressBlock = document.getElementById('lblProgressCount').parentElement.parentElement;
-    if(progressBlock) progressBlock.style.display = 'none';
-
-    // Đổ các nút công cụ quản lý thay vì đổ danh sách 9 buổi
-    container.innerHTML = `
-        <div class="card-anti-glare border-2 border-purple-500 flex flex-col justify-between">
-            <div class="space-y-2">
-                <span class="text-[10px] font-black text-purple-600 uppercase tracking-widest block">ADMIN TÍNH NĂNG</span>
-                <h3 class="text-sm font-black text-gray-900 leading-snug">Quản lý Bảng điểm (Live)</h3>
-                <p class="text-xs text-gray-500 font-medium">Theo dõi dữ liệu đo đạc thực tế của 180 sinh viên đang đổ về hệ thống theo thời gian thực.</p>
-            </div>
-            <div class="pt-4 border-t border-gray-100 mt-4">
-                <a href="pages/admin-monitor.html" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-black text-xs py-3 px-4 rounded-xl shadow-md transition-all">
-                    VÀO TRANG QUẢN TRỊ
-                </a>
-            </div>
-        </div>
-    `;
 }
