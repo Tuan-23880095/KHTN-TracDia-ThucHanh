@@ -176,7 +176,15 @@ function setupRoleBasedUI(user) {
         showMessage('formErrorMessage', '💡 Chế độ Giảng viên: Bạn đang xem số liệu thực tập của sinh viên này ở chế độ Đọc (Read-only).', 'warning');
     }
 }
+// DÒNG CODE CŨ:
+// const measurementModel = new Measurement(val1, val2, val3, 3);
 
+// DÒNG CODE VỪA ĐƯỢC NÂNG CẤP LÊN ĐẲNG CẤP DOANH NGHIỆP:
+// Kéo giới hạn sai số từ bộ nhớ đã tải từ Google Sheets (Nếu Sheets lỗi thì tự động dùng số 3 dự phòng)
+const maxDiffAllow = userAuthInstance.getConfig("Buổi 1", "max_diff", 3);
+
+const measurementModel = new Measurement(val1, val2, val3, maxDiffAllow);
+const qcResult = measurementModel.validate();
 /**
  * 2. Hàm lắng nghe gõ phím tính Toán Trung Bình Cộng Live (Real-time average listener)
  */
