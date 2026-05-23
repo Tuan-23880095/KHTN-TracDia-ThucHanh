@@ -18,26 +18,39 @@ class UserAuth {
     /**
      * 1. HÀM ĐĂNG NHẬP (Login)
      */
-    async login(userId, password) {
+  /**
+     * 1. HÀM ĐĂNG NHẬP (Đã nâng cấp tải thêm Bareme Cấu hình)
+     */
+     async login(userId, password) {
         try {
             const loginPayload = {
                 action: "login",
-                credentials: {
-                    user_id: userId,
-                    password: password
-                }
+                credentials: { user_id: userId, password: password }
             };
 
+            // 1. Gọi API Đăng nhập
             const response = await apiConnectorInstance.postSubmission(loginPayload, []);
 
             if (response.success && response.data) {
+                // Đăng nhập thành công, lưu thông tin user
                 this._saveSession(response.data);
+
+                // 2. NGAY LẬP TỨC: GỌI API KÉO BẢNG CẤU HÌNH (CONFIGS) VỀ LƯU CACHE
+                try {
+                    const configRes = await apiConnectorInstance.getFetch('getConfigs');
+                    if (configRes.success && configRes.data) {
+                        // Lưu toàn bộ bảng luật sai số vào LocalStorage để dùng Offline
+                        localStorage.setItem('tracdia_system_configs', JSON.stringify(configRes.data));
+                    }
+                } catch (cfgErr) {
+                    console.warn("Chưa tải được bảng cấu hình, sẽ dùng cấu hình mặc định.", cfgErr);
+                }
+
                 return { success: true, message: "Đăng nhập thành công!" };
             } else {
                 return { success: false, message: response.message || "Tài khoản hoặc mật khẩu không đúng." };
             }
         } catch (error) {
-            console.error("Lỗi xác thực:", error);
             return { success: false, message: "Lỗi kết nối máy chủ xác thực." };
         }
     }
