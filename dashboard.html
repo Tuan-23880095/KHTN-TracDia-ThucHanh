@@ -3,39 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bảng điều khiển - Hệ thống Thực hành Trắc địa | HCMUS</title>
+    <title>Bảng điều khiển Trung tâm - Hệ thống Trắc địa số | HCMUS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/components.css">
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .gradient-banner {
-            background: linear-gradient(135deg, #1e40af, #0369a1);
-        }
+        .gradient-banner { background: linear-gradient(135deg, #1e40af, #0369a1); }
+        .matrix-cell { transition: all 0.2s ease-in-out; }
+        .matrix-cell:hover { transform: scale(1.1); z-index: 10; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
 
     <nav class="bg-white shadow-md border-b border-gray-100 sticky top-0 z-50 px-4">
         <div class="max-w-7xl mx-auto flex justify-between h-16 sm:h-20 items-center">
-            
             <div class="flex items-center gap-3">
-                <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Logo-HCMUS-300x246.jpg" 
-                     alt="HCMUS" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
+                <img src="https://geology.hcmus.edu.vn/wp-content/uploads/2023/11/Logo-HCMUS-300x246.jpg" alt="HCMUS" class="h-10 w-auto object-contain" onerror="this.style.display='none'">
                 <div class="flex flex-col">
                     <span class="text-[10px] font-black text-gray-400 uppercase tracking-wider leading-tight">Khoa Địa Chất</span>
                     <span class="text-sm font-black text-blue-600 tracking-tight">Trắc Địa Số</span>
                 </div>
             </div>
-
             <div class="flex items-center gap-4">
-                <div class="hidden sm:flex flex-col text-right">
+                <div class="flex flex-col text-right">
                     <span id="lblHeaderUserName" class="text-sm font-extrabold text-gray-850">Đang tải...</span>
-                    <span id="lblHeaderUserRole" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Sinh viên</span>
+                    <span id="lblHeaderUserRole" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">...</span>
                 </div>
                 <button id="btnLogout" class="btn border border-gray-200 text-xs font-black rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-all !min-height-[40px] px-3 py-2">
                     Đăng xuất
@@ -44,104 +41,97 @@
         </div>
     </nav>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:py-10 space-y-6">
         
-        <section class="gradient-banner text-white p-6 sm:p-8 rounded-3xl shadow-lg space-y-4">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <section id="sectionStudentView" class="hidden space-y-6">
+            <div class="gradient-banner text-white p-6 sm:p-8 rounded-3xl shadow-lg flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div class="space-y-1.5">
-                    <h1 class="text-xl sm:text-2xl font-black tracking-tight">
-                        Chào ngày mới, <span id="lblBannerName" class="text-cyan-300">...</span>!
-                    </h1>
+                    <h1 class="text-xl sm:text-2xl font-black tracking-tight">Chào ngày mới, <span id="lblBannerName" class="text-cyan-300">...</span>!</h1>
                     <p class="text-xs sm:text-sm text-blue-100 font-medium">
-                        Mã số: <span id="lblBannerId" class="font-bold">...</span> | 
-                        Nhóm thực địa: <span id="lblBannerGroup" class="font-bold">...</span>
+                        Mã số: <span id="lblBannerId" class="font-bold">...</span> | Nhóm thực địa: <span id="lblBannerGroup" class="font-bold">...</span>
                     </p>
                 </div>
-                
-                <div class="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 text-center sm:text-right min-w-[150px]">
-                    <div class="text-[10px] text-blue-200 uppercase font-black tracking-widest">Tiến độ thực tập</div>
-                    <div class="text-2xl font-black text-cyan-300"><span id="lblProgressCount">0</span> / 8 Buổi</div>
+                <div class="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 text-center">
+                    <div class="text-[10px] text-blue-200 uppercase font-black tracking-widest">Tiến độ báo cáo</div>
+                    <div class="text-2xl font-black text-cyan-300"><span id="lblProgressCount">0</span> / 8 Bài</div>
                 </div>
-            </div>
-        </section>
-
-        <section class="space-y-4">
-            <div class="flex items-center justify-between border-b border-gray-200 pb-2">
-                <h2 class="text-sm sm:text-base font-black text-gray-800 tracking-wide uppercase">
-                    Lộ trình thực hành & Sát hạch công trường
-                </h2>
-                <span class="text-xs font-bold text-gray-400">Học kỳ II - 2026</span>
             </div>
 
             <div id="sessionGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                
-                <div class="card-anti-glare border-2 border-emerald-500 flex flex-col justify-between hover:shadow-md transition-all relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-emerald-500 text-white px-3 py-1 text-[9px] font-black uppercase rounded-bl-xl tracking-wider">
-                        Đã nộp bài
-                    </div>
-                    <div class="space-y-2 pr-16">
-                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest block">Buổi 1</span>
-                        <h3 class="text-sm font-black text-gray-900 leading-snug">Giới thiệu về máy Kinh vĩ và máy Thủy bình</h3>
-                        <p class="text-xs text-gray-500 font-medium">Nhận diện cấu tạo máy, làm quen các hệ thống ốc điều quang và vi động.</p>
-                    </div>
-                    <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-between gap-2">
-                        <div class="text-emerald-600 text-xs font-extrabold">✅ ĐẠT CHUẨN QC</div>
-                        <a href="pages/session-1.html?mode=view" class="px-4 py-2 text-xs font-black rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-all border border-emerald-200">
-                            Xem báo cáo
-                        </a>
-                    </div>
                 </div>
+        </section>
 
-                <div class="card-anti-glare flex flex-col justify-between hover:border-blue-400 hover:shadow-md transition-all">
-                    <div class="space-y-2">
-                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest block">Buổi 7</span>
-                        <h3 class="text-sm font-black text-gray-900 leading-snug">Dẫn chuyền cao độ tuyến kín (Hiện trường)</h3>
-                        <p class="text-xs text-gray-500 font-medium">Phối hợp lập sổ đo cao hình học vòng khép kín trạm A-B-C-A ngoài hiện trường.</p>
+        <section id="sectionTeacherView" class="hidden space-y-8">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="card-anti-glare border-l-4 border-l-blue-600 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-wider">Sinh viên hoàn thành</h3>
+                        <p id="lblStatsStudent" class="text-3xl font-black text-blue-600 mt-1">0 / 0</p>
                     </div>
-                    <div class="pt-4 border-t border-gray-100 mt-4 flex items-center justify-end">
-                        <a href="pages/session-7.html" class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-wider">
-                            Vào thực hành
-                        </a>
-                    </div>
+                    <div class="text-3xl">👤</div>
                 </div>
-
-                <div class="card-anti-glare !bg-amber-50 border-2 border-amber-400 flex flex-col justify-between hover:shadow-md transition-all relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-amber-500 text-white px-3 py-1 text-[9px] font-black uppercase rounded-bl-xl tracking-wider animate-pulse">
-                        SÁT HẠCH ĐỒNG HỒ ĐẾM NGƯỢC
+                <div class="card-anti-glare border-l-4 border-l-emerald-500 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-wider">Nhóm thực địa hoàn thành</h3>
+                        <p id="lblStatsGroup" class="text-3xl font-black text-emerald-600 mt-1">0 / 0</p>
                     </div>
-                    <div class="space-y-2 pr-12">
-                        <span class="text-[10px] font-black text-amber-700 uppercase tracking-widest block">Buổi 9</span>
-                        <h3 class="text-sm font-black text-amber-900 leading-snug">Thi Thực Hành Tổng Hợp</h3>
-                        <p class="text-xs text-amber-800 font-medium">Bốc đề random, thực hiện cân máy và đọc số liệu dưới áp lực thời gian.</p>
-                    </div>
-                    <div class="pt-4 border-t border-amber-200 mt-4 flex items-center justify-end">
-                        <a href="pages/session-9.html" class="w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-black text-xs py-3 px-4 rounded-xl shadow-md transition-all uppercase tracking-wider">
-                            Bắt đầu thi
-                        </a>
-                    </div>
+                    <div class="text-3xl">👥</div>
                 </div>
-
             </div>
+
+            <div class="card-anti-glare space-y-4">
+                <h2 class="text-sm font-black text-gray-800 uppercase tracking-wide border-b pb-2 flex items-center gap-2">
+                    <span>📊</span> Ma trận tiến độ thực hành cá nhân (Sinh viên)
+                </h2>
+                <div class="overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-full text-xs text-center border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 font-extrabold text-gray-700 select-none">
+                                <th class="p-3 border text-left min-w-[100px]">MSSV</th>
+                                <th class="p-3 border text-left min-w-[180px]">Họ và Tên</th>
+                                <th class="p-3 border w-12">B1</th><th class="p-3 border w-12">B2</th>
+                                <th class="p-3 border w-12">B3</th><th class="p-3 border w-12">B4</th>
+                                <th class="p-3 border w-12">B5</th><th class="p-3 border w-12">B6</th>
+                                <th class="p-3 border w-12">B7</th><th class="p-3 border w-12">B8</th>
+                                <th class="p-3 border w-12">Thi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblIndividualMatrixBody" class="font-semibold text-gray-800">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card-anti-glare space-y-4">
+                <h2 class="text-sm font-black text-gray-800 uppercase tracking-wide border-b pb-2 flex items-center gap-2">
+                    <span>👥</span> Ma trận tiến độ liên kết tổ đội (Nhóm thực địa)
+                </h2>
+                <div class="max-w-3xl overflow-x-auto rounded-xl border border-gray-200">
+                    <table class="w-full text-xs text-center border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 font-extrabold text-gray-700 select-none">
+                                <th class="p-3 border text-left min-w-[150px]">Mã nhóm hiện trường</th>
+                                <th class="p-3 border w-12">B1</th><th class="p-3 border w-12">B2</th>
+                                <th class="p-3 border w-12">B3</th><th class="p-3 border w-12">B4</th>
+                                <th class="p-3 border w-12">B5</th><th class="p-3 border w-12">B6</th>
+                                <th class="p-3 border w-12">B7</th><th class="p-3 border w-12">B8</th>
+                                <th class="p-3 border w-12">Thi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblGroupMatrixBody" class="font-semibold text-gray-800">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
         </section>
     </main>
 
-    <footer class="bg-white border-t border-gray-200 mt-10 py-6 text-center px-4">
-        <p class="text-xs font-medium text-gray-400 leading-relaxed">
-            &copy; Người phát triển web: ThS. Đinh Quốc Tuấn <br>
-            Mục đích giáo dục, phi lợi nhuận <br>
-            2026 Khoa Địa chất - HCMUS. Phát triển phục vụ học phần Trắc địa đại cương.
-        </p>
-        <div class="mt-2 flex justify-center space-x-4 text-[10px] text-blue-500 font-extrabold uppercase tracking-wider">
-            <a href="guide.html" class="hover:underline">Hướng dẫn sử dụng</a>
-            <span>•</span>
-            <a href="mailto:gv.dongoc@hcmus.edu.vn" class="hover:underline">Hỗ trợ kỹ thuật</a>
-        </div>
+    <footer class="bg-white border-t border-gray-200 py-4 text-center text-[10px] font-medium text-gray-400 mt-auto">
+        &copy; 2026 Khoa Địa chất - Trường ĐH Khoa học Tự nhiên - ĐHQG HCM.
     </footer>
 
-    <script type="module">
-        import userAuthInstance from './js/core/UserAuth.js';
-        userAuthInstance.requireAuth(); // Hàm chặn và bảo vệ tuyến đường
-    </script>
     <script type="module" src="js/controllers/dashboardCtrl.js"></script>
 
 </body>
