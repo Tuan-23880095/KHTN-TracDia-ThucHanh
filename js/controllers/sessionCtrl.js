@@ -154,7 +154,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // [THÊM MỚI] GHI NHẬN NGAY VÀO LOCALSTORAGE ĐỂ DASHBOARD CẬP NHẬT TỨC THÌ
                 const localProgressKey = `completed_sessions_${user.user_id}`;
                 let progressData = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
-                
+                const currentSession = getInputValue('txtSessionName', 'string');
+                if (submitType === "Cá nhân") {
+                    if (!localProgress.individualLog.includes(currentSession)) localProgress.individualLog.push(currentSession);
+                } else {
+                    if (!localProgress.groupLog.includes(currentSession)) localProgress.groupLog.push(currentSession);
+                }
+                localStorage.setItem(localProgressKey, JSON.stringify(localProgress));
+                // ------------------------------------------------------------------
                 if (submitType === "Cá nhân" && !progressData.individual.includes(submissionObj.session_name)) {
                     progressData.individual.push(submissionObj.session_name);
                 } else if (submitType === "Nhóm" && !progressData.group.includes(submissionObj.session_name)) {
