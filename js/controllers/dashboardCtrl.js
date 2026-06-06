@@ -70,13 +70,14 @@ async function initStudentDashboard(user) {
         let serverProgress = response.success ? response.data : { individualLog: [], groupLog: [] };
         
         // [THÊM MỚI] Kéo dữ liệu từ Local Cache để bù trừ độ trễ của Server
-        const localProgressKey = `completed_sessions_${user.user_id}`;
-        let localProgress = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
-
-        // Gộp dữ liệu Server và Local (Sử dụng Set để loại bỏ các buổi bị trùng lặp)
+    // --- [THÊM MỚI] KÉO DỮ LIỆU TỪ BỘ NHỚ ĐỆM LOCAL VÀ GỘP VỚI SERVER ---
+        const localProgressKey = `tracdia_progress_${user.user_id}`;
+        const localProgress = JSON.parse(localStorage.getItem(localProgressKey) || '{"individualLog": [], "groupLog": []}');
+        
         const progress = {
-            individualLog: [...new Set([...serverProgress.individualLog, ...localProgress.individual])],
-            groupLog: [...new Set([...serverProgress.groupLog, ...localProgress.group])]
+            // Dùng Set để gộp mảng và tự động xóa các buổi bị trùng lặp
+            individualLog: [...new Set([...serverProgress.individualLog, ...localProgress.individualLog])],
+            groupLog: [...new Set([...serverProgress.groupLog, ...localProgress.groupLog])]
         };
 
         // Cập nhật số lượng bài trên Banner
