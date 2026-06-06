@@ -166,11 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
                 
                 const currentSessionName = getInputValue('txtSessionName', 'string');
-                showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
-                
-                // Lấy tên buổi học hiện tại (VD: "Buổi 1")
-                const currentSessionName = getInputValue('txtSessionName', 'string');
-                
+               
                 setTimeout(() => {
                     // ĐIỀU HƯỚNG THẲNG SANG TRANG TEMPLATE A4 CÙNG VỚI DATA TRUYỀN THEO
                     window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSessionName)}&studentId=${user.user_id}`);
