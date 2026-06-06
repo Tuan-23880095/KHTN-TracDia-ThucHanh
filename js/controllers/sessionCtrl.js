@@ -223,6 +223,35 @@ function setupRoleBasedUI(user) {
         formElements.forEach(el => el.disabled = true);
         showMessage('formErrorMessage', '💡 Chế độ Giảng viên: Bạn đang xem số liệu thực tập của sinh viên này ở chế độ Đọc (Read-only).', 'warning');
     }
+    const currentSession = document.getElementById('txtSessionName').value;
+    const localProgressKey = `tracdia_progress_${user.user_id}`;
+    const localProgress = JSON.parse(localStorage.getItem(localProgressKey) || '{"individualLog": [], "groupLog": []}');
+
+    if (localProgress.individualLog.includes(currentSession) && user.role !== 'teacher') {
+        showMessage('formErrorMessage', '✅ Bạn đã hoàn thành nộp số liệu cho buổi này. Không thể sửa đổi.', 'success');
+        
+        // Disable toàn bộ thẻ input/select/textarea
+        const formElements = document.querySelectorAll('#session1Form input, #session1Form select, #session1Form textarea');
+        formElements.forEach(el => {
+            el.disabled = true;
+            el.classList.add('bg-gray-100', 'cursor-not-allowed', 'opacity-70'); // Làm mờ ô nhập
+        });
+
+        // Biến nút NỘP BÀI thành nút XUẤT BẢN IN
+        const btnSubmit = document.getElementById('btnSubmitForm');
+        if (btnSubmit) {
+            btnSubmit.innerHTML = '🖨️ XEM LẠI BÁO CÁO ĐÃ NỘP';
+            btnSubmit.classList.remove('btn-primary');
+            btnSubmit.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'text-white');
+            
+            // Xóa sự kiện submit cũ và gắn sự kiện chuyển trang
+            btnSubmit.type = 'button'; 
+            btnSubmit.onclick = (e) => {
+                e.preventDefault();
+                window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSession)}&studentId=${user.user_id}`);
+            };
+        }
+    }
 }
 // DÒNG CODE CŨ:
 // const measurementModel = new Measurement(val1, val2, val3, 3);
