@@ -133,7 +133,36 @@ class UserAuth {
         if (!this.isLoggedIn()) return false;
         return this.currentUser.role === requiredRole;
     }
+    /**
+     * 8. LẤY CẤU HÌNH TỪ LOCALSTORAGE (Offline Configs)
+     * Dùng để gọi các hạn mức sai số (tolerance) đã tải từ Google Sheets
+     */
+    getConfig(sessionName, key, defaultValue) {
+        try {
+            const configsString = localStorage.getItem('tracdia_system_configs');
+            if (!configsString) return defaultValue; // Nếu chưa tải được config thì dùng số mặc định (dự phòng)
 
+            const configs = JSON.parse(configsString);
+            
+            // Tùy thuộc vào cấu trúc mảng config của bạn trả về từ Google Sheets.
+            // Giả sử nó là mảng Object: [{session_name: "Buổi 1", max_diff: 3}, ...]
+            if (Array.isArray(configs)) {
+                const sessionConfig = configs.find(c => c.session_name === sessionName);
+                if (sessionConfig && sessionConfig[key] !== undefined) {
+                    return parseFloat(sessionConfig[key]); // Ép về số thực để tính toán toán học
+                }
+            } 
+            // Nếu config dạng Object key-value: {"Buổi 1": {max_diff: 3}}
+            else if (configs[sessionName] && configs[sessionName][key] !== undefined) {
+                return parseFloat(configs[sessionName][key]);
+            }
+
+            return defaultValue;
+        } catch (e) {
+            console.error("⚠️ Lỗi đọc Configs từ LocalStorage:", e);
+            return defaultValue;
+        }
+    }
     // ================= PRIVATE METHODS =================
     
     _saveSession(userData) {
