@@ -148,39 +148,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }];
 
             // TUYẾN TRÌNH 4: PHÁT XUNG GỌI APICONNECTOR ĐẨY VỀ MÁY CHỦ GOOGLE SCRIPT
-            const apiResult = await apiConnectorInstance.postSubmission(submissionObj, measurementsArray);
-
-            if (apiResult.success) {
-                // [THÊM MỚI] GHI NHẬN NGAY VÀO LOCALSTORAGE ĐỂ DASHBOARD CẬP NHẬT TỨC THÌ
-                const localProgressKey = `completed_sessions_${user.user_id}`;
-                let progressData = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
-                const currentSession = getInputValue('txtSessionName', 'string');
-                if (submitType === "Cá nhân") {
-                    if (!localProgress.individualLog.includes(currentSession)) localProgress.individualLog.push(currentSession);
+               // TUYẾN TRÌNH 4: PHÁT XUNG GỌI APICONNECTOR ĐẨY VỀ MÁY CHỦ GOOGLE SCRIPT
+                const apiResult = await apiConnectorInstance.postSubmission(submissionObj, measurementsArray);
+    
+                if (apiResult.success) {
+                    // 1. KHAI BÁO VÀ KÉO DỮ LIỆU TỪ BỘ NHỚ ĐỆM TRÌNH DUYỆT (Bắt buộc phải có dòng let này)
+                    const localProgressKey = `tracdia_progress_${user.user_id}`;
+                    let localProgress = JSON.parse(localStorage.getItem(localProgressKey) || '{"individualLog": [], "groupLog": []}');
+                    
+                    // 2. CẬP NHẬT DỮ LIỆU VÀO BIẾN localProgress
+                    const currentSessionName = getInputValue('txtSessionName', 'string');
+                    if (submitType === "Cá nhân") {
+                        if (!localProgress.individualLog.includes(currentSessionName)) {
+                            localProgress.individualLog.push(currentSessionName);
+                        }
+                    } else {
+                        if (!localProgress.groupLog.includes(currentSessionName)) {
+                            localProgress.groupLog.push(currentSessionName);
+                        }
+                    }
+                    
+                    // 3. LƯU NGƯỢC LẠI VÀO BỘ NHỚ TRÌNH DUYỆT
+                    localStorage.setItem(localProgressKey, JSON.stringify(localProgress));
+    
+                    // 4. HIỂN THỊ THÔNG BÁO VÀ CHUYỂN TRANG
+                    showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
+                    
+                    setTimeout(() => {
+                        // ĐIỀU HƯỚNG THẲNG SANG TRANG TEMPLATE A4 CÙNG VỚI DATA TRUYỀN THEO
+                        window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSessionName)}&studentId=${user.user_id}`);
+                    }, 1500);
                 } else {
-                    if (!localProgress.groupLog.includes(currentSession)) localProgress.groupLog.push(currentSession);
+                    throw new Error(apiResult.message || "Lỗi không xác định từ phía Google Sheets.");
                 }
-                localStorage.setItem(localProgressKey, JSON.stringify(localProgress));
-                // ------------------------------------------------------------------
-                if (submitType === "Cá nhân" && !progressData.individual.includes(submissionObj.session_name)) {
-                    progressData.individual.push(submissionObj.session_name);
-                } else if (submitType === "Nhóm" && !progressData.group.includes(submissionObj.session_name)) {
-                    progressData.group.push(submissionObj.session_name);
-                }
-                localStorage.setItem(localProgressKey, JSON.stringify(progressData));
-                // ----------------------------------------------------------------------
-
-                showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
-                
-                const currentSessionName = getInputValue('txtSessionName', 'string');
-               
-                setTimeout(() => {
-                    // ĐIỀU HƯỚNG THẲNG SANG TRANG TEMPLATE A4 CÙNG VỚI DATA TRUYỀN THEO
-                    window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSessionName)}&studentId=${user.user_id}`);
-                }, 1500);
-            } else {
-                throw new Error(apiResult.message || "Lỗi không xác định từ phía Google Sheets.");
-            }
 
         } catch (error) {
             console.error("❌ Thất bại tại tiến trình nộp bài:", error);
