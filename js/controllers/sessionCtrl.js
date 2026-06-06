@@ -32,9 +32,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const sessionForm = document.getElementById('session1Form');
     if (!sessionForm) return;
 
-    // BƯỚC 2: PHÂN QUYỀN VÀ ĐIỀU PHỐI GIAO DIỆN HÌNH HỌC (RBAC UI CONTROL)
+   // BƯỚC 2: PHÂN QUYỀN VÀ ĐIỀU PHỐI GIAO DIỆN HÌNH HỌC (RBAC UI CONTROL)
     setupRoleBasedUI(user);
 
+    // [THÊM MỚI] BƯỚC 2.5: KIỂM TRA BỘ NHỚ ĐỆM VÀ KHÓA MƯỢT FORM NẾU ĐÃ NỘP
+    const currentSessionName = getInputValue('txtSessionName', 'string');
+    const localProgressKey = `completed_sessions_${user.user_id}`;
+    let progressCache = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
+
+    // Nếu đã nộp bài cá nhân và không phải là Giảng viên
+    if (progressCache.individual.includes(currentSessionName) && user.role !== 'teacher') {
+        showMessage('formErrorMessage', '✅ Bạn đã hoàn thành nộp số liệu cá nhân cho buổi này!', 'success');
+        
+        // Khóa mờ tất cả các ô nhập liệu của Form Cá Nhân
+        const indivInputs = document.querySelectorAll('#panelCaNhan input');
+        indivInputs.forEach(input => {
+            input.disabled = true;
+            input.classList.add('bg-gray-100', 'cursor-not-allowed', 'opacity-70');
+        });
+
+        // Đổi nút nộp bài thành nút XEM BÁO CÁO (Trải nghiệm mượt mà không cho nộp lần 2)
+        const btnSubmit = document.getElementById('btnSubmitForm');
+        if (btnSubmit) {
+            btnSubmit.innerHTML = '🖨️ XEM LẠI BÁO CÁO ĐÃ NỘP';
+            btnSubmit.type = 'button'; // Ngăn hành vi Submit form
+            btnSubmit.classList.remove('btn-primary');
+            btnSubmit.classList.add('bg-emerald-600', 'hover:bg-emerald-700', 'text-white');
+            
+            btnSubmit.onclick = (e) => {
+                e.preventDefault();
+                window.location.replace(`../pages/report-template.html?session=${encodeURIComponent(currentSessionName)}&studentId=${user.user_id}`);
+            };
+        }
+    }
     // BƯỚC 3: KÍCH HOẠT TÍNH TOÁN THEO THỜI GIAN THỰC (LIVE COMPUTER)
     setupLiveCalculations();
 
