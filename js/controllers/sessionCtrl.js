@@ -151,6 +151,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const apiResult = await apiConnectorInstance.postSubmission(submissionObj, measurementsArray);
 
             if (apiResult.success) {
+                // [THÊM MỚI] GHI NHẬN NGAY VÀO LOCALSTORAGE ĐỂ DASHBOARD CẬP NHẬT TỨC THÌ
+                const localProgressKey = `completed_sessions_${user.user_id}`;
+                let progressData = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
+                
+                if (submitType === "Cá nhân" && !progressData.individual.includes(submissionObj.session_name)) {
+                    progressData.individual.push(submissionObj.session_name);
+                } else if (submitType === "Nhóm" && !progressData.group.includes(submissionObj.session_name)) {
+                    progressData.group.push(submissionObj.session_name);
+                }
+                localStorage.setItem(localProgressKey, JSON.stringify(progressData));
+                // ----------------------------------------------------------------------
+
+                showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
+                
+                const currentSessionName = getInputValue('txtSessionName', 'string');
                 showMessage('formErrorMessage', '🎉 Nộp báo cáo thành công! Hệ thống đang khởi tạo bản in PDF...', 'success');
                 
                 // Lấy tên buổi học hiện tại (VD: "Buổi 1")
