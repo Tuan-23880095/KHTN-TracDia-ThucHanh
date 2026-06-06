@@ -62,13 +62,24 @@ async function initStudentDashboard(user) {
     const gridContainer = document.getElementById('sessionGridContainer');
     gridContainer.innerHTML = `<div class="col-span-full text-center py-6 font-bold animate-pulse text-gray-400">Đang kiểm tra dữ liệu nộp bài trên Google Sheets...</div>`;
 
-    try {
+   try {
         // Gọi API kéo danh sách lịch sử nộp bài sạch từ Google Sheets về
         const response = await apiConnectorInstance.getFetch(`getStudentProgress&studentId=${user.user_id}&groupId=${user.group_id}`);
         
-        // Cấu trúc data mong đợi từ Server: { individualLog: ["Buổi 1", "Buổi 2"], groupLog: ["Buổi 1"] }
-        const progress = response.success ? response.data : { individualLog: [], groupLog: [] };
+        // Dữ liệu từ Server (Có thể bị trễ vài giây do Google Sheets)
+        let serverProgress = response.success ? response.data : { individualLog: [], groupLog: [] };
         
+        // [THÊM MỚI] Kéo dữ liệu từ Local Cache để bù trừ độ trễ của Server
+        const localProgressKey = `completed_sessions_${user.user_id}`;
+        let localProgress = JSON.parse(localStorage.getItem(localProgressKey) || '{"individual": [], "group": []}');
+
+        // Gộp dữ liệu Server và Local (Sử dụng Set để loại bỏ các buổi bị trùng lặp)
+        const progress = {
+            individualLog: [...new Set([...serverProgress.individualLog, ...localProgress.individual])],
+            groupLog: [...new Set([...serverProgress.groupLog, ...localProgress.group])]
+        };
+
+        // Cập nhật số lượng bài trên Banner
         document.getElementById('lblProgressCount').textContent = progress.individualLog.length;
         gridContainer.innerHTML = ''; // Dọn sạch khay
 
